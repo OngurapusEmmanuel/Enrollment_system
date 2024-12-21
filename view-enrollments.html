@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Enrollments</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .filter-section {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar bg-dark text-white p-3">
+                <h4 class="text-center mb-4">Admin Dashboard</h4>
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-3">
+                        <a href="admin-dashboard.html" class="nav-link text-white">Dashboard Home</a>
+                    </li>
+                    <li class="nav-item mb-3">
+                        <a href="#" class="nav-link text-white">View Enrollments</a>
+                    </li>
+                    <li class="nav-item mb-3">
+                        <a href="#" class="nav-link text-white">Manage Users</a>
+                    </li>
+                    <li class="nav-item mb-3">
+                        <a href="#" class="nav-link text-white">Reports</a>
+                    </li>
+                    <li class="nav-item mb-3">
+                        <a href="#" class="nav-link text-white">Settings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-danger">Logout</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                    <h1 class="h2">View Enrollments</h1>
+                    <button class="btn btn-sm btn-primary">Add New Enrollment</button>
+                </div>
+
+                <!-- Filter Section -->
+                <div class="filter-section">
+                    <h5>Filter Enrollments</h5>
+                    <form class="row g-3">
+                        <div class="col-md-4">
+                            <label for="programFilter" class="form-label">Program</label>
+                            <select class="form-select" id="programFilter">
+                                <option value="">All</option>
+                                <option value="web-dev">Web Development</option>
+                                <option value="graphic-design">Graphic Design</option>
+                                <option value="data-analysis">Data Analysis</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="statusFilter" class="form-label">Status</label>
+                            <select class="form-select" id="statusFilter">
+                                <option value="">All</option>
+                                <option value="completed">Completed</option>
+                                <option value="pending">Pending</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="dateFilter" class="form-label">Enrollment Date</label>
+                            <input type="date" class="form-control" id="dateFilter">
+                        </div>
+                        <div class="col-12">
+                            <button type="button" class="btn btn-primary">Apply Filters</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Enrollments Table -->
+                <div class="card">
+                    <div class="card-header">
+                        Enrollments
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Program</th>
+                                    <th>Status</th>
+                                    <th>Enrollment Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>John Doe</td>
+                                    <td>Web Development</td>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                    <td>2024-01-01</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">View</button>
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Jane Smith</td>
+                                    <td>Graphic Design</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                    <td>2024-02-10</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">View</button>
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </td>
+                                </tr>
+                                <!-- Add more rows as needed -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

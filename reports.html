@@ -29,22 +29,60 @@
                 <h4 class="text-center mb-4">Admin Dashboard</h4>
                 <ul class="nav flex-column">
                     <li class="nav-item mb-3">
-                        <a href="#" class="nav-link text-white">Dashboard Home</a>
+                        <a href="#" class="nav-link">Dashboard Home</a>
                     </li>
                     <li class="nav-item mb-3">
-                        <a href="#" class="nav-link text-white">View Enrollments</a>
+                        <a href="view-enrollments.html" class="nav-link">View Enrollments</a>
                     </li>
                     <li class="nav-item mb-3">
-                        <a href="#" class="nav-link text-white">Manage Users</a>
+                        <a href="manage-users.html" class="nav-link">Manage Users</a>
                     </li>
                     <li class="nav-item mb-3">
-                        <a href="#" class="nav-link text-white">Reports</a>
+                        <a href="reports.html" class="nav-link">Reports</a>
+                    </li>
+                    <!-- <?php
+                    // Include database connection file
+                    require_once("includes/db.php");
+                    
+                    $requestCount = 0;
+                    $num=0;
+                    if ($con) {
+                        // Prepare an SQL statement to count rows
+                        $stmt = $con->prepare("SELECT COUNT(*) FROM notifications");
+                        
+                        // Execute the statement
+                        if ($stmt->execute()) {
+                            // Bind the result to a variable
+                            $stmt->bind_result($requestCount);
+                            $stmt->fetch();
+                        }
+                        // if($stmt1->execute()){
+                        //     $stmt1->bind_result($num);
+                        //     $stmt1->fetch();
+                        // }
+                    
+                        // Close the statement and connection
+                        $stmt->close();
+                        // $stmt1->close();
+                    
+                    } else {
+                        echo "Database connection failed.";
+                    }
+                    ?> -->
+                    <li class="nav-item mb-3">
+                        <a href="notifications.html" class="nav-link">Notifications 
+                            <!-- <?php if ($requestCount > 0 ||$num > 0): ?>
+                            <span class="badge"><?php
+                                 echo $requestCount; 
+                                 ?></span>
+                        <?php endif; ?> -->
+                        </a>
                     </li>
                     <li class="nav-item mb-3">
-                        <a href="#" class="nav-link text-white">Settings</a>
+                        <a href="setting.html" class="nav-link">Settings</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link text-danger">Logout</a>
+                        <a href="logout.php" class="nav-link text-danger">Logout</a>
                     </li>
                 </ul>
             </nav>

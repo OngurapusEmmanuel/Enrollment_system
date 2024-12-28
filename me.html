@@ -156,25 +156,17 @@
 </body>
 
 <?php
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "enrollment";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once("includes/config.php");
 
 // Get form data
-$sl_no = $_POST['sl_no'];
-$name = $_POST['name'];
+
+$firstname = $_POST['firstname'];
+$lastname = $_POST['lastname'];
+$email = $_POST['email'];
+$phone = $_POST['phone'];
 $parent_name = $_POST['parent_name'];
 $age = $_POST['age'];
-$sex = $_POST['sex'];
+$gender = $_POST['gender'];
 $education = $_POST['education'];
 $category = $_POST['category'];
 $disabilities = implode(", ", $_POST['disabilities']);
@@ -185,11 +177,11 @@ $parent_occupation = $_POST['parent_occupation'];
 $guardian_name = $_POST['guardian_name'];
 $guardian_relation = $_POST['guardian_relation'];
 $health_insurance = $_POST['health_insurance'];
-$other_facilities = $_POST['other_facilities'];
+$other_info = $_POST['other_info'];
 
 // Insert data into database
-$sql = "INSERT INTO enrollment_data (sl_no, name, parent_name, age, sex, education, category, disabilities, disability_certificate, support, bpl, parent_occupation, guardian_name, guardian_relation, health_insurance, other_facilities) 
-VALUES ('$sl_no', '$name', '$parent_name', '$age', '$sex', '$education', '$category', '$disabilities', '$disability_certificate', '$support', '$bpl', '$parent_occupation', '$guardian_name', '$guardian_relation', '$health_insurance', '$other_facilities')";
+$sql = "INSERT INTO enrollment_data ( First_name,Last_name,Email,phone_no,Parent_name,Age,Gender,Education,Category,Disabilities,Disability_certificat,Support,Bpl,Parent_occupation,Guardian_name ,Guardian_relation,Health_insurance,Other_info )
+VALUES ( '$firstname,$lastname,$email,$phone '$parent_name', '$age', '$gender', '$education', '$category', '$disabilities', '$disability_certificate', '$support', '$bpl', '$parent_occupation', '$guardian_name', '$guardian_relation', '$health_insurance', '$other_info')";
 
 if ($conn->query($sql) === TRUE) {
     echo "New record created successfully";

@@ -38,28 +38,29 @@
                 <!-- Filter Section -->
                 <div class="filter-section">
                     <h5>Filter Users</h5>
-                    <form class="row g-3">
-                        <div class="col-md-6">
-                            <label for="roleFilter" class="form-label">Role</label>
-                            <select class="form-select" id="roleFilter">
-                                <option value="">All</option>
-                                <option value="admin">Admin</option>
-                                <option value="user">User</option>
-                                <option value="moderator">Moderator</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="statusFilter" class="form-label">Status</label>
-                            <select class="form-select" id="statusFilter">
-                                <option value="">All</option>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <button type="button" class="btn btn-primary">Apply Filters</button>
-                        </div>
-                    </form>
+                    <form class="row g-3" method="GET" action="manage-users.php">
+    <div class="col-md-6">
+        <label for="roleFilter" class="form-label">Role</label>
+        <select class="form-select" id="roleFilter" name="roleFilter">
+            <option value="">All</option>
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+            <option value="moderator">Moderator</option>
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label for="statusFilter" class="form-label">Status</label>
+        <select class="form-select" id="statusFilter" name="statusFilter">
+            <option value="">All</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+        </select>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Apply Filters</button>
+    </div>
+</form>
+
                 </div>
 
                 <!-- Users Table -->
@@ -82,42 +83,58 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php
-                                require_once("includes/config.php");
+                            <?php
+require_once("includes/config.php");
 
-                                // Check if the connection is established
-                                if ($con) {
-                                    $stmt = $con->prepare("
-                                        SELECT Id, Firstname, Lastname, Email, `Phone Number`, Role, Status 
-                                        FROM users
-                                    ");
+// Get filter values from the GET request
+$roleFilter = isset($_GET['roleFilter']) ? $_GET['roleFilter'] : '';
+$statusFilter = isset($_GET['statusFilter']) ? $_GET['statusFilter'] : '';
 
-                                    // Execute the statement
-                                    $stmt->execute();
+// Build the SQL query with filters
+$query = "SELECT Id, Firstname, Lastname, Email, `Phone Number`, Role, Status FROM users WHERE 1=1";
 
-                                    // Bind the results to variables
-                                    $stmt->bind_result($Id, $firstname, $lastname, $email, $phone, $role, $status);
+if ($roleFilter) {
+    $query .= " AND Role = ?";
+}
+if ($statusFilter) {
+    $query .= " AND Status = ?";
+}
 
-                                    // Fetch the data and display it in the table
-                                    while ($stmt->fetch()) {
-                                        echo "
-                                        <tr>
-                                            <td data-Id='" . htmlspecialchars($Id) . "'>{$Id}</td>
-                                            <td data-firstname='" . htmlspecialchars($firstname) . "'>{$firstname}</td>
-                                            <td data-lastname='" . htmlspecialchars($lastname) . "'>{$lastname}</td>
-                                            <td data-email='" . htmlspecialchars($email) . "'>{$email}</td>
-                                            <td data-phone='" . htmlspecialchars($phone) . "'>{$phone}</td>
-                                            <td data-role='" . htmlspecialchars($role) . "'>{$role}</td>
-                                            <td data-status='" . htmlspecialchars($status) . "'>{$status}</td>
-                                            <td>
-                                                <button class='btn btn-sm btn-warning' data-bs-toggle='modal' data-bs-target='#editUserModal' data-id='{$Id}' data-firstname='{$firstname}' data-lastname='{$lastname}' data-email='{$email}' data-phone='{$phone}' data-role='{$role}' data-status='{$status}'>Edit</button>
-                                                <button class='btn btn-sm btn-danger' onclick='deleteUser({$Id})'>Delete</button>
-                                            </td>
-                                        </tr>
-                                        ";
-                                    }
-                                }
-                                ?>
+$stmt = $con->prepare($query);
+
+// Bind parameters if filters are set
+if ($roleFilter && $statusFilter) {
+    $stmt->bind_param('ss', $roleFilter, $statusFilter);
+} elseif ($roleFilter) {
+    $stmt->bind_param('s', $roleFilter);
+} elseif ($statusFilter) {
+    $stmt->bind_param('s', $statusFilter);
+}
+
+$stmt->execute();
+$stmt->bind_result($Id, $firstname, $lastname, $email, $phone, $role, $status);
+
+// Fetch and display the filtered users
+while ($stmt->fetch()) {
+    echo "
+    <tr>
+        <td>{$Id}</td>
+        <td>{$firstname}</td>
+        <td>{$lastname}</td>
+        <td>{$email}</td>
+        <td>{$phone}</td>
+        <td>{$role}</td>
+        <td>{$status}</td>
+        <td>
+            <button class='btn btn-sm btn-warning' data-bs-toggle='modal' data-bs-target='#editUserModal' data-id='{$Id}' data-firstname='{$firstname}' data-lastname='{$lastname}' data-email='{$email}' data-phone='{$phone}' data-role='{$role}' data-status='{$status}'>Edit</button>
+            <button class='btn btn-sm btn-danger' onclick='deleteUser({$Id})'>Delete</button>
+        </td>
+    </tr>
+    ";
+}
+$stmt->close();
+?>
+
 
                                 
                             </tbody>

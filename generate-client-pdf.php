@@ -61,18 +61,18 @@ $html = '<table border="1" cellpadding="5">
             <thead>
                 <tr>
                     <th width="5%">ID</th>
-                    <th width="20%">Name</th>
-                    <th width="20%">Parent Name</th>
-                    <th width="5%">Age</th>
-                    <th width="10%">Sex</th>
-                    <th width="20%">Education</th>
-                    <th width="20%">Category</th>
+                    <th width="20%">first Name</th>
+                    <th width="20%">Last Name</th>
+                    <th width="5%">Email</th>
+                    <th width="10%">Phone Number</th>
+                    <th width="20%">Role</th>
+                    <th width="20%">Status</th>
                 </tr>
             </thead>
             <tbody>';
 
 // Query to fetch all records from the enrollment_data table
-$sql = "SELECT sl_no, name, parent_name, age, sex, education, category FROM enrollment_data";
+$sql = "SELECT Id, Firstname, Lastname, Email, `Phone Number`, Role, Status FROM users";
 $stmt = $conn->prepare($sql);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -80,14 +80,15 @@ $result = $stmt->get_result();
 // Append data to the table
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
+       
         $html .= '<tr>
-                    <td>' . $row['sl_no'] . '</td>
-                    <td>' . $row['name'] . '</td>
-                    <td>' . $row['parent_name'] . '</td>
-                    <td>' . $row['age'] . '</td>
-                    <td>' . $row['sex'] . '</td>
-                    <td>' . $row['education'] . '</td>
-                    <td>' . $row['category'] . '</td>
+                    <td>' . $row['Id'] . '</td>
+                    <td>' . $row['Firstname'] . '</td>
+                    <td>' . $row['Lastname'] . '</td>
+                    <td>' . $row['email'] . '</td>
+                    <td>' . $row['Phone Number'] . '</td>
+                    <td>' . $row['Role'] . '</td>
+                    <td>' . $row['Status'] . '</td>
                   </tr>';
     }
 } else {

@@ -175,31 +175,37 @@
                     </div>
                 </div>
 
-                <!-- Filter Section -->
-                <div class="filter-section">
-                    <h5>Filter Reports</h5>
-                    <form class="row g-3">
-                        <div class="col-md-4">
-                            <label for="startDate" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="startDate">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="endDate" class="form-label">End Date</label>
-                            <input type="date" class="form-control" id="endDate">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="status" class="form-label">Status</label>
-                            <select class="form-select"  id="status">
-                                <option value="">All</option>
-                                <option value="completed">Completed</option>
-                                <option value="pending">Pending</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <button type="button" class="btn btn-primary">Apply Filters</button>
-                        </div>
-                    </form>
+               
+                    <!-- Filter Section -->
+<div class="filter-section">
+    <h5>Filter Enrollments</h5>
+    <form class="row g-3" method="GET">
+        <div class="col-md-4">
+            <label for="disabilityFilter" class="form-label">Disability</label>
+            <select class="form-select" id="disabilityFilter" name="disability">
+                <option value="">All</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="ageFilter" class="form-label">Age Range</label>
+            <select class="form-select" id="ageFilter" name="age">
+                <option value="">All</option>
+                <option value="under-18">Under 18</option>
+                <option value="18-25">18-25</option>
+                <option value="26-35">26-35</option>
+                <option value="36-45">36-45</option>
+                <option value="46-60">46-60</option>
+                <option value="60+">60+</option>
+            </select>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+        </div>
+    </form>
+</div>
+
                 </div>
 
                 <!-- Reports Table -->
@@ -224,46 +230,84 @@
                             <tbody>
                                 <tr>
                                 <?php
-    require_once("includes/config.php");
+require_once("includes/config.php");
 
-    // Check if the connection is established
-    if ($con) {
-        $x = 5;
+// Initialize filter variables
+$disabilityFilter = isset($_GET['disability']) ? $_GET['disability'] : '';
+$ageFilter = isset($_GET['age']) ? $_GET['age'] : '';
 
-        // Prepare the statement to select data from the 'exhibits' table
-        $stmt = $con->prepare("
-            SELECT Id,First_name,Last_name,Email,Phone_no,Age,Parent_name,Disabilities 
-            FROM approved_clients
-        ");
+// Build the query dynamically based on the filters
+$query = "SELECT Id, First_name, Last_name, Phone_no, Age, Parent_name, Disabilities FROM approved_clients WHERE 1";
 
-        // Execute the statement
-        $stmt->execute();
+// Apply disability filter if selected
+if ($disabilityFilter !== '') {
+    $query .= " AND Disabilities = ?";
+}
 
-        // Bind the results to variables
-        $stmt->bind_result($Id,$firstname, $lastname, $email, $phone, $age, $parent,$disability);
-
-        // Fetch the data and display it in the table
-        while ($stmt->fetch()) {
-            echo "
-            
-                <td>{$Id}</td>
-                <td>{$firstname}</td>
-                <td>{$lastname}</td>
-                <td>{$email}</td>
-                <td>{$phone}</td>
-                <td>{$age}</td>
-                <td>{$parent}</td>
-                <td>{$disability}</td>
-                
-            ";
-            // $x++;
-        }
+// Apply age filter if provided
+if ($ageFilter !== '') {
+    switch ($ageFilter) {
+        case 'under-18':
+            $query .= " AND Age < 18";
+            break;
+        case '18-25':
+            $query .= " AND Age BETWEEN 18 AND 25";
+            break;
+        case '26-35':
+            $query .= " AND Age BETWEEN 26 AND 35";
+            break;
+        case '36-45':
+            $query .= " AND Age BETWEEN 36 AND 45";
+            break;
+        case '46-60':
+            $query .= " AND Age BETWEEN 46 AND 60";
+            break;
+        case '60+':
+            $query .= " AND Age > 60";
+            break;
     }
-        ?>
-                                    <td>
-                                        <button class="btn btn-sm btn-primary view-btn">View</button>
-                                    </td>
-                                </tr>
+}
+
+// Add LIMIT to the query to restrict the number of rows to 5
+$query .= " LIMIT 5";
+
+// Prepare the statement
+$stmt = $con->prepare($query);
+
+// Bind parameters for the prepared statement
+if ($disabilityFilter !== '' && $ageFilter !== '') {
+    $stmt->bind_param("s", $disabilityFilter);
+} elseif ($disabilityFilter !== '') {
+    $stmt->bind_param("s", $disabilityFilter);
+}
+
+// Execute the statement
+$stmt->execute();
+
+// Bind the results to variables
+$stmt->bind_result($Id, $firstname, $lastname, $phone, $age, $parent, $disability);
+
+// Fetch the data and display it in the table
+while ($stmt->fetch()) {
+    echo "
+        <tr>
+            <td>{$Id}</td>
+            <td>{$firstname}</td>
+            <td>{$lastname}</td>
+            <td>{$phone}</td>
+            <td>{$age}</td>
+            <td>{$parent}</td>
+            <td>{$disability}</td>
+              <td>
+            <button class='btn btn-sm btn-primary view-btn' data-bs-toggle='modal' data-bs-target='#viewclientModal'>View</button>
+        </td>
+        </tr>
+    ";
+}
+?>
+
+                                
+                               
                                 
                             </tbody>
                         </table>
@@ -274,7 +318,7 @@
     </div>
 
       <!-- Modal for Viewing Details -->
-      <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+      <div class="modal fade" id="viewClientModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -360,7 +404,7 @@ $conn->close();
                             document.getElementById("modalHealth_insu").textContent = data.Health_insurance;
 
                             // Show the modal
-                            const viewModal = new bootstrap.Modal(document.getElementById("viewModal"));
+                            const viewModal = new bootstrap.Modal(document.getElementById("viewClientModal"));
                             viewModal.show();
                         })
                         .catch(error => console.error("Error fetching data:", error));

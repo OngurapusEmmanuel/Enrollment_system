@@ -67,7 +67,7 @@
                   <div class="download-container">
                     <span class="download-icon">⬇</span>
                     <div class="dropdown">
-                      <a href="files/sample.pdf" download="sample.pdf">Download PDF</a>
+                      <a href="generate-client-pdf.php" download="enrolled_clients.pdf">Download PDF</a>
                       <a href="files/sample.xlsx" download="sample.xlsx">Download Excel</a>
                     </div>
                   </div>
@@ -89,36 +89,35 @@
                 </div>
 
                 <!-- Filter Section -->
-                <div class="filter-section">
-                    <h5>Filter Enrollments</h5>
-                    <form class="row g-3">
-                        <div class="col-md-4">
-                            <label for="programFilter" class="form-label">Program</label>
-                            <select class="form-select" id="programFilter">
-                                <option value="">All</option>
-                                <option value="web-dev">Web Development</option>
-                                <option value="graphic-design">Graphic Design</option>
-                                <option value="data-analysis">Data Analysis</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="statusFilter" class="form-label">Status</label>
-                            <select class="form-select" id="statusFilter">
-                                <option value="">All</option>
-                                <option value="completed">Completed</option>
-                                <option value="pending">Pending</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="dateFilter" class="form-label">Enrollment Date</label>
-                            <input type="date" class="form-control" id="dateFilter">
-                        </div>
-                        <div class="col-12">
-                            <button type="button" class="btn btn-primary">Apply Filters</button>
-                        </div>
-                    </form>
-                </div>
+<div class="filter-section">
+    <h5>Filter Enrollments</h5>
+    <form class="row g-3" method="GET">
+        <div class="col-md-4">
+            <label for="disabilityFilter" class="form-label">Disability</label>
+            <select class="form-select" id="disabilityFilter" name="disability">
+                <option value="">All</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="ageFilter" class="form-label">Age Range</label>
+            <select class="form-select" id="ageFilter" name="age">
+                <option value="">All</option>
+                <option value="under-18">Under 18</option>
+                <option value="18-25">18-25</option>
+                <option value="26-35">26-35</option>
+                <option value="36-45">36-45</option>
+                <option value="46-60">46-60</option>
+                <option value="60+">60+</option>
+            </select>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+        </div>
+    </form>
+</div>
+
 
                 <!-- Enrollments Table -->
                 <div class="card">
@@ -142,36 +141,79 @@
                             <tbody>
                                 <tr>
                                 <?php
-    require_once("includes/config.php");
+require_once("includes/config.php");
 
-    // Check if the connection is established
-    if ($con) {
-        $x = 5;
+// Initialize filter variables
+$disabilityFilter = isset($_GET['disability']) ? $_GET['disability'] : '';
+$ageFilter = isset($_GET['age']) ? $_GET['age'] : '';
 
-        // Prepare the statement to select data from the 'exhibits' table
-        $stmt = $con->prepare("SELECT Id,First_name,Last_name,Phone_no,Age,Parent_name,Disabilities  FROM approved_clients");
+// Build the query dynamically based on the filters
+$query = "SELECT Id, First_name, Last_name, Phone_no, Age, Parent_name, Disabilities FROM clients WHERE 1";
 
-        // Execute the statement
-        $stmt->execute();
+// Apply disability filter if selected
+if ($disabilityFilter !== '') {
+    $query .= " AND Disabilities = ?";
+}
 
-        // Bind the results to variables
-        $stmt->bind_result($Id,$firstname, $lastname, $phone, $age, $parent,$disability);
-
-        // Fetch the data and display it in the table
-        while ($stmt->fetch()) {
-            echo "
-                <td>{$Id}</td>
-                <td>{$firstname}</td>
-                <td>{$lastname}</td>
-                <td>{$phone}</td>
-                <td>{$age}</td>
-                <td>{$parent}</td>
-                <td>{$disability}</td>
-                ";
-            // $x++;
-        }
+// Apply age filter if provided
+if ($ageFilter !== '') {
+    switch ($ageFilter) {
+        case 'under-18':
+            $query .= " AND Age < 18";
+            break;
+        case '18-25':
+            $query .= " AND Age BETWEEN 18 AND 25";
+            break;
+        case '26-35':
+            $query .= " AND Age BETWEEN 26 AND 35";
+            break;
+        case '36-45':
+            $query .= " AND Age BETWEEN 36 AND 45";
+            break;
+        case '46-60':
+            $query .= " AND Age BETWEEN 46 AND 60";
+            break;
+        case '60+':
+            $query .= " AND Age > 60";
+            break;
     }
-        ?>
+}
+
+// Prepare the statement
+$stmt = $con->prepare($query);
+
+// Bind parameters for the prepared statement
+if ($disabilityFilter !== '' && $ageFilter !== '') {
+    $stmt->bind_param("s", $disabilityFilter);
+} elseif ($disabilityFilter !== '') {
+    $stmt->bind_param("s", $disabilityFilter);
+}
+
+// Execute the statement
+$stmt->execute();
+
+// Bind the results to variables
+$stmt->bind_result($Id, $firstname, $lastname, $phone, $age, $parent, $disability);
+
+// Fetch the data and display it in the table
+while ($stmt->fetch()) {
+    echo "
+        <tr>
+            <td>{$Id}</td>
+            <td>{$firstname}</td>
+            <td>{$lastname}</td>
+            <td>{$phone}</td>
+            <td>{$age}</td>
+            <td>{$parent}</td>
+            <td>{$disability}</td>
+            <td>
+                <button class='btn btn-sm btn-primary view-btn'>View</button>
+            </td>
+        </tr>
+    ";
+}
+?>
+
                                     <td>
                                         <button class="btn btn-sm btn-primary view-btn">View</button>
                                     </td>

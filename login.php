@@ -36,12 +36,12 @@ if ($_SERVER["REQUEST_METHOD"]==="POST") {
 		if ($numRows === 0) {
 			$error="email not found";
 		} else {
-			if (password_verify($Password, $pw) == false) {
-            // if($password!=$pw){
+			// if (!password_verify($Password, $pw)) {
+            if($password!=$pw){
 				echo "<script>
                 alert('invalid password! Try again');
                 </script>";
-                header(Location:login.php);
+                header("Location:login.php");
 			} else {
                 if ($role='admin'|| 'moderator'||'Admin') {
                     require_once "includes/sessions.php";

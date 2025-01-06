@@ -82,63 +82,44 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <?php
-    require_once("includes/config.php");
+                                <?php
+                                require_once("includes/config.php");
 
-    // Check if the connection is established
-    if ($con) {
-        $x = 1;
+                                // Check if the connection is established
+                                if ($con) {
+                                    $stmt = $con->prepare("
+                                        SELECT Id, Firstname, Lastname, Email, `Phone Number`, Role, Status 
+                                        FROM users
+                                    ");
 
-        // Prepare the statement to select data from the 'exhibits' table
-        $stmt = $con->prepare("
-            SELECT Id,Firstname,Lastname,Email,`Phone Number`,Role,Status 
-            FROM users
-        ");
+                                    // Execute the statement
+                                    $stmt->execute();
 
-        // Execute the statement
-        $stmt->execute();
+                                    // Bind the results to variables
+                                    $stmt->bind_result($Id, $firstname, $lastname, $email, $phone, $role, $status);
 
-        // Bind the results to variables
-        $stmt->bind_result($Id,$firstname, $lastname, $email, $phone, $role, $status);
+                                    // Fetch the data and display it in the table
+                                    while ($stmt->fetch()) {
+                                        echo "
+                                        <tr>
+                                            <td data-Id='" . htmlspecialchars($Id) . "'>{$Id}</td>
+                                            <td data-firstname='" . htmlspecialchars($firstname) . "'>{$firstname}</td>
+                                            <td data-lastname='" . htmlspecialchars($lastname) . "'>{$lastname}</td>
+                                            <td data-email='" . htmlspecialchars($email) . "'>{$email}</td>
+                                            <td data-phone='" . htmlspecialchars($phone) . "'>{$phone}</td>
+                                            <td data-role='" . htmlspecialchars($role) . "'>{$role}</td>
+                                            <td data-status='" . htmlspecialchars($status) . "'>{$status}</td>
+                                            <td>
+                                                <button class='btn btn-sm btn-warning' data-bs-toggle='modal' data-bs-target='#editUserModal' data-id='{$Id}' data-firstname='{$firstname}' data-lastname='{$lastname}' data-email='{$email}' data-phone='{$phone}' data-role='{$role}' data-status='{$status}'>Edit</button>
+                                                <button class='btn btn-sm btn-danger' onclick='deleteUser({$Id})'>Delete</button>
+                                            </td>
+                                        </tr>
+                                        ";
+                                    }
+                                }
+                                ?>
 
-        // Fetch the data and display it in the table
-        while ($stmt->fetch()) {
-            echo "
-            <tr>
-                <td data-Id='" . htmlspecialchars($Id) . "'>{$Id}</td>
-                <td data-firstname='" . htmlspecialchars($firstname) . "'>{$firstname}</td>
-                <td data-lastname='" . htmlspecialchars($lastname) . "'>{$lastname}</td>
-                <td data-email='" . htmlspecialchars($email) . "'>{$email}</td>
-                <td data-phone='" . htmlspecialchars($phone) . "'>{$phone}</td>
-                <td data-role='" . htmlspecialchars($role) . "'>{$role}</td>
-                <td data-status='" . htmlspecialchars($status) . "'>{$status}</td>
-                <td>
-                <td>
-</td>
-            </tr>
-            ";
-           
-        }
-    }
-        ?>
-       <td>
-                                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button>
-                                        <button class="btn btn-sm btn-danger">Delete</button>
-                                    </td>
-                                </tr>
-                                <!-- <tr>
-                                    <td>2</td>
-                                    <td>Jane Smith</td>
-                                    <td>jane.smith@example.com</td>
-                                    <td>User</td>
-                                    <td><span class="badge bg-danger">Inactive</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button>
-                                        <button class="btn btn-sm btn-danger">Delete</button>
-                                    </td>
-                                </tr> -->
-                                <!-- Add more rows as needed -->
+                                
                             </tbody>
                         </table>
                     </div>
@@ -146,196 +127,206 @@
             </main>
         </div>
     </div>
-
-    <!-- Add User Modal -->
-    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
-                  
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-<?php
-    if ($_SERVER["REQUEST_METHOD"]==="POST") {
-    $firstname= htmlspecialchars($_POST["firstName"]);
-    $lastname= htmlspecialchars($_POST["lastName"]);
-    $phone= htmlspecialchars($_POST["phoneNumber"]);
-    $role= htmlspecialchars($_POST["userRole"]);
-    $status= htmlspecialchars($_POST["userStatus"]);
-	$email = htmlspecialchars($_POST["userEmail"]);
-	$password = htmlspecialchars($_POST["password"]);
- $hashedpwd = password_hash($password, PASSWORD_BCRYPT);
-	require_once "includes/config.php";
-	if ($con) {
-	
-    // Insert data into database
-    $stmt = $con->prepare("INSERT INTO users(`Firstname`,`Lastname`,`Email`,`Phone Number`,`Role`,`Status`,`Password`)VALUES(?,?,?,?,?,?,?)");
-
-    $stmt->bind_param('sssssss', $firstname, $lastname, $email,$phone,$role,$status,$hashedpwd);
-    
-    $stmt->execute();
-    if ($stmt->affected_rows === -1) {
-        echo "Error";
-    } else {
-     echo "<script>
-        alert('User created successfully!');
-        
-    </script>";
-        $stmt->close();
-        // alert("User created successfully");
-       
-        // header("Location: manage-users.php");
+<script>
+function deleteUser(userId) {
+    if (confirm("Are you sure you want to delete this user?")) {
+        // You can make an AJAX call to delete the user from the database
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "delete_user.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // Optionally, refresh the page or remove the row from the table
+                alert("User deleted successfully!");
+                location.reload();  // Reload the page to reflect changes
+            }
+        };
+        xhr.send("id=" + userId);
     }
-
-
 }
-$con->close();
-}
-?>
-                <div class="modal-body">
-                    <form action="" method="post">
-                        <div class="mb-3">
-                            <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" name="firstName" class="form-control" id="firstName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="lastName" class="form-label"> Last Name</label>
-                            <input type="text" name="lastName" class="form-control" id="lastName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="userEmail" class="form-label">Email</label>
-                            <input type="email" name="userEmail" class="form-control" id="userEmail" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="phoneNumber" class="form-label">phone number</label>
-                            <input type="number" name="phoneNumber" class="form-control" id="phoneNumber" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="userRole" class="form-label">Role</label>
-                            <select class="form-select" name="userRole" id="userRole">
-                                <option value="admin">Admin</option>
-                                <option value="user">User</option>
-                                <option value="moderator">Moderator</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="userStatus" class="form-label">Status</label>
-                            <select class="form-select" name="userStatus" id="userStatus">
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" name="pasword" class="form-control" id="password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Edit User Modal -->
-    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                
-                <?php
+    </script>
+   <?php
+require_once("includes/config.php");
 
-if ($_SERVER["REQUEST_METHOD"]==="POST") {
-    $firstname=($_POST["firstName"]);
-    $lastname=($_POST["lastName"]);
-    $phone=($_POST["phoneNumber"]);
-    $role=($_POST["userRole"]);
-    $status=($_POST["userStatus"]);
-	$email = ($_POST["userEmail"]);
-	$password = ($_POST["password"]);
-	require_once "includes/config.php";
-	$con;
-	
-    // Insert data into database
-$stmt = $con->prepare( "UPDATE users SET `Email`= ? , `Phone Number` = ? `Role`=? `Status`=? WHERE `Firstname`= ?" );
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $action = $_POST['action'];
 
-$stmt->bind_param('sssss',$email, $phone, $role, $status,$firstname);
+    if ($action == 'add') {
+        // Add user logic
+        $firstname = htmlspecialchars($_POST["firstName"]);
+        $lastname = htmlspecialchars($_POST["lastName"]);
+        $phone = htmlspecialchars($_POST["phoneNumber"]);
+        $role = htmlspecialchars($_POST["userRole"]);
+        $status = htmlspecialchars($_POST["userStatus"]);
+        $email = htmlspecialchars($_POST["userEmail"]);
+        $password = htmlspecialchars($_POST["password"]);
+        $hashedpwd = password_hash($password, PASSWORD_BCRYPT);
 
-$stmt->execute();
-if ($stmt->affected_rows === -1) {
-    echo "Error";
-} else {
-    echo "<script>
-    alert('Infor updated successfully!');
-    
-</script>";
-    $stmt->close();
-    // alert("User created successfully");
-   
-    header("Location: manage-users.php");
-}
-// $stmt->execute();
-// if ( $stmt->execute()) {
-//     echo "<script>
-//     alert('Infor updated successfully!');
-    
-// </script>";
-// $stmt->close();
-// // window.location.href = 'admin-dashboard.php';
-// } else {
-//     echo "Error: " . $sql . "<br>" . $conn->error;
-// }
+        if ($con) {
+            $stmt = $con->prepare("INSERT INTO users(`Firstname`, `Lastname`, `Email`, `Phone Number`, `Role`, `Status`, `Password`) VALUES(?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param('sssssss', $firstname, $lastname, $email, $phone, $role, $status, $hashedpwd);
+            $stmt->execute();
+            if ($stmt->affected_rows > 0) {
+                echo "<script>alert('User created successfully!');</script>";
+            } else {
+                echo "<script>alert('Error creating user.');</script>";
+            }
+            $stmt->close();
+        }
+    } elseif ($action == 'update') {
+        // Update user logic
+        $id = $_POST['id'];
+        $firstname = htmlspecialchars($_POST["firstName"]);
+        $lastname = htmlspecialchars($_POST["lastName"]);
+        $phone = htmlspecialchars($_POST["phoneNumber"]);
+        $role = htmlspecialchars($_POST["userRole"]);
+        $status = htmlspecialchars($_POST["userStatus"]);
+        $email = htmlspecialchars($_POST["userEmail"]);
 
-$con->close();
+        if ($con) {
+            $stmt = $con->prepare("UPDATE users SET Firstname = ?, Lastname = ?, Email = ?, `Phone Number` = ?, Role = ?, Status = ? WHERE Id = ?");
+            $stmt->bind_param('ssssssi', $firstname, $lastname, $email, $phone, $role, $status, $id);
+            $stmt->execute();
+            if ($stmt->affected_rows > 0) {
+                echo "<script>alert('User updated successfully!');</script>";
+            } else {
+                echo "<script>alert('Error updating user.');</script>";
+            }
+            $stmt->close();
+        }
+    }
+    $con->close();
 }
 ?>
 
-                <div class="modal-body">
-                    <form action="" method="post">
-                        <div class="mb-3">
-                            <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" name="firstName"  value="<?php echo $firstname; ?>" class="form-control" id="firstName">
-                        </div>
-                        <div class="mb-3">
-                            <label for="lastName" class="form-label"> Last Name</label>
-                            <input type="text" name="lastName"  value="<?php echo $lastname; ?>" class="form-control" id="lastName">
-                        </div>
-                        <div class="mb-3">
-                            <label for="userEmail" class="form-label">Email</label>
-                            <input type="email" name="userEmail"  value="<?php echo $email; ?>" class="form-control" id="userEmail">
-                        </div>
-                        <div class="mb-3">
-                            <label for="phoneNumber" class="form-label">phone number</label>
-                            <input type="number" name="phoneNumber"  value="<?php echo $phone; ?>" class="form-control" id="phoneNumber">
-                        </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editUserRole" class="form-label">Role</label>
-                            <select class="form-select" name="userRole" id="editUserRole">
-                                <option value="admin">Admin</option>
-                                <option value="user">User</option>
-                                <option value="moderator">Moderator</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editUserStatus" class="form-label">Status</label>
-                            <select class="form-select" name="userStatus" id="editUserStatus">
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Update</button>
-                    </form>
-                </div>
-                
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="manage-users.php" method="post">
+                    <input type="hidden" name="action" value="add"> <!-- Add this line -->
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" name="firstName" class="form-control" id="firstName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" name="lastName" class="form-control" id="lastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Email</label>
+                        <input type="email" name="userEmail" class="form-control" id="userEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Phone Number</label>
+                        <input type="number" name="phoneNumber" class="form-control" id="phoneNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="userRole" class="form-label">Role</label>
+                        <select class="form-select" name="userRole" id="userRole">
+                            <option value="admin">Admin</option>
+                            <option value="user">User</option>
+                            <option value="moderator">Moderator</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="userStatus" class="form-label">Status</label>
+                        <select class="form-select" name="userStatus" id="userStatus">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Bootstrap JS -->
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="manage-users.php" method="post">
+                    <input type="hidden" name="action" value="update"> <!-- Add this line -->
+                    <input type="hidden" name="id" id="editId">
+                    <div class="mb-3">
+                        <label for="editFirstName" class="form-label">First Name</label>
+                        <input type="text" name="firstName" class="form-control" id="editFirstName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editLastName" class="form-label">Last Name</label>
+                        <input type="text" name="lastName" class="form-control" id="editLastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email</label>
+                        <input type="email" name="userEmail" class="form-control" id="editEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPhoneNumber" class="form-label">Phone Number</label>
+                        <input type="number" name="phoneNumber" class="form-control" id="editPhoneNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRole" class="form-label">Role</label>
+                        <select class="form-select" name="userRole" id="editRole">
+                            <option value="admin">Admin</option>
+                            <option value="user">User</option>
+                            <option value="moderator">Moderator</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editStatus" class="form-label">Status</label>
+                        <select class="form-select" name="userStatus" id="editStatus">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Populate the edit modal with the user data
+        var editUserModal = document.getElementById('editUserModal');
+        editUserModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var userId = button.getAttribute('data-id');
+            var firstName = button.getAttribute('data-firstname');
+            var lastName = button.getAttribute('data-lastname');
+            var email = button.getAttribute('data-email');
+            var phone = button.getAttribute('data-phone');
+            var role = button.getAttribute('data-role');
+            var status = button.getAttribute('data-status');
+
+            document.getElementById('editId').value = userId;
+            document.getElementById('editFirstName').value = firstName;
+            document.getElementById('editLastName').value = lastName;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editPhoneNumber').value = phone;
+            document.getElementById('editRole').value = role;
+            document.getElementById('editStatus').value = status;
+        });
+    </script>
 </body>
 </html>

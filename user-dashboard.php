@@ -48,7 +48,8 @@
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
                     <h1 class="h2">Welcome,<?php echo $_SESSION["name"]; ?></h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
-                        <button class="btn btn-sm btn-outline-secondary">Edit Profile</button>
+                    <a href="index.php" class="nav-link">  <button class="btn btn-sm btn-outline-secondary">Edit Profile</button>
+                    </a>
                     </div>
                 </div>
 

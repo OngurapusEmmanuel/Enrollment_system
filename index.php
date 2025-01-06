@@ -1,21 +1,21 @@
 <?php 
-require_once("includes/sessions.php");
+// require_once("includes/sessions.php");
 
-if (isset($_SESSION["name"])) {
+// if (isset($_SESSION["name"])) {
 
-  header("Location:index.php");
+//   header("Location:index.php");
  
-}
-else {
-    header("Location:login.php");
-}
+// }
+// else {
+//     header("Location:login.php");
+// }
 
 
-if (isset($_GET["logout"])) {
-   session_destroy();
-   header("Location:login.php");
-   exit;
-}
+// if (isset($_GET["logout"])) {
+//    session_destroy();
+//    header("Location:login.php");
+//    exit;
+// }
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -25,7 +25,9 @@ if (isset($_GET["logout"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>
-        <?php echo $_SESSION["name"]; ?>
+        <?php
+        //  echo $_SESSION["name"];
+         ?>
     </title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="public/css/style.css">
@@ -35,70 +37,26 @@ if (isset($_GET["logout"])) {
     <link rel = "icon"
     href = "public/images/statue.jpg"
     type = "image/x-icon">
+     <!-- Bootstrap CSS -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        Body {
-            Margin: 0;
-            Font-family: Arial, sans-serif;
-            Display: flex;
+        body {
+            background-color: #f8f9fa;
         }
-
-        /* Sidebar styling */
         .sidebar {
-            Width: 250px;
-            Height: 100vh;
-            Background-color: #333;
-            Color: white;
-            Display: flex;
-            Flex-direction: column;
-            Padding: 20px;
-            Box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            height: 100vh;
+            background-color: #343a40;
+            color: white;
         }
-
-        .sidebar h2 {
-            Margin-bottom: 20px;
-        }
-
         .sidebar a {
-            Text-decoration: none;
-            Color: white;
-            Padding: 10px 15px;
-            Margin-bottom: 5px;
-            Display: block;
-            Border-radius: 4px;
-            Transition: background-color 1s ease;
+            color: white;
+            text-decoration: none;
         }
-
         .sidebar a:hover {
-            Background-color: #575757;
+            text-decoration: underline;
         }
-
-        .sidebar a.active {
-            Background-color: #4CAF50;
-        }
-
-        .logout {
-            Margin-top: auto;
-        }
-
-        /* Main content styling */
-        .content {
-            Flex: 1;
-            Padding: 20px;
-            Background-color: #f4f4f4;
-            Overflow: hidden;
-        }
-
-        .content-section {
-            Display: none;
-            Opacity: 0;
-            Transform: translateX(20px);
-            Transition: all 1s ease;
-        }
-
-        .content-section.active {
-            Display: block;
-            Opacity: 1;
-            Transform: translateX(0);
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
     <script>
@@ -120,9 +78,9 @@ if (isset($_GET["logout"])) {
 
 </head>
 <body>
-
+<?php include 'user_nav.php' ?>
 <!-- Sidebar -->
- <div class="sidebar">
+ <!-- <div class="sidebar">
  <h2>Dashboard</h2>
         <a href="javascript:void(0)" onclick="showSection(‘section1’)">Home</a>
         <a href="javascript:void(0)" onclick="showSection(‘section2’)">Profile</a>
@@ -132,13 +90,15 @@ if (isset($_GET["logout"])) {
 
 
 
-</div>
+</div> -->
 
 <!-- Main Content  -->
     <div class=”content”>
         <!-- Home Section -->
         <div id="section1" class="content-section active">
-            <h1>Welcome,  <?php echo $_SESSION["name"]; ?>!</h1>
+            <h1>Welcome,  <?php
+            //  echo $_SESSION["name"];
+              ?>!</h1>
             <p>This is the home section of your dashboard.</p>
         </div>
 
@@ -153,7 +113,7 @@ if (isset($_GET["logout"])) {
                     $stmt = $con->prepare("
                     SELECT Firstname, Lastname,
                     Email, PhoneNumber,Role
-                    FROM user WHERE Firstname= ?");
+                    FROM users WHERE Firstname= ?");
                     $stmt->bind_param('s', $_SESSION['name']);
                     $stmt->execute();
                     $stmt->store_result();

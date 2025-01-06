@@ -43,28 +43,31 @@
         <?php
 
 if ($_SERVER["REQUEST_METHOD"]==="POST") {
-    $firstnme=($_POST["firstname"]);
+    $firstname=($_POST["firstname"]);
     $lastname=($_POST["lastname"]);
     $phone=($_POST["phoneNumber"]);
     $role=($_POST["userRole"]);
     $status=($_POST["userStatus"]);
 	$email = ($_POST["userEmail"]);
 	$password = ($_POST["password"]);
-
 	require_once "includes/config.php";
 	$con;
 	
     // Insert data into database
-$sql = "INSERT INTO enrollment_data (`Firstname`,`Lastname`,`Email`,`Phone Number`,`Role`,`Status`,`Password` 
-VALUES (' '$firstname', '$lastname', '$email','$phone','$role','$status','$password')";
+$stmt = $con->prepare("UPDATE users SET `Firstname`= ?, `Lastname`= ? , `Email`= ? , `Phone Number` = ? `Role`=? `Status`=? WHERE `Firstname`= ? AND `Lastname`=? ");VALUES (' '$firstname', '$lastname', '$email','$phone','$role','$status')";
+
+$stmt->bind_param('ssssss',$email, $phone, $role, $status,$firstname,$lastname);
 
 if ($conn->query($sql) === TRUE) {
-    echo "New record created successfully";
+    echo "<script>
+    alert('Infor updated successfully!');
+    window.location.href = 'admin-dashboard.php'; 
+</script>";
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
 }
 
-$conn->close();
+$con->close();
 }
 ?>
  <?php if(isset($_GET['id'])) ?>

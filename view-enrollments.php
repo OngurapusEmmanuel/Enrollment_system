@@ -57,69 +57,13 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar bg-dark text-white p-3">
-                <h4 class="text-center mb-4">Admin Dashboard</h4>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-3">
-                        <a href="Admin-dashboard.php" class="nav-link">Dashboard Home</a>
-                    </li>
-                    <li class="nav-item mb-3">
-                        <a href="view-enrollments.php" class="nav-link">View Enrollments</a>
-                    </li>
-                    <li class="nav-item mb-3">
-                        <a href="manage-users.php" class="nav-link">Manage Users</a>
-                    </li>
-                   
-                    <!-- <?php
-                    // Include database connection file
-                    require_once("includes/config.php");
-                    
-                    $requestCount12 = 0;
-                    $num=0;
-                    if ($con) {
-                        // Prepare an SQL statement to count rows
-                        $stmt = $con->prepare("SELECT COUNT(*) FROM notifications");
-                        
-                        // Execute the statement
-                        if ($stmt->execute()) {
-                            // Bind the result to a variable
-                            $stmt->bind_result($requestCount12);
-                            $stmt->fetch();
-                        }
-                        // if($stmt1->execute()){
-                        //     $stmt1->bind_result($num);
-                        //     $stmt1->fetch();
-                        // }
-                    
-                        // Close the statement and connection
-                        $stmt->close();
-                        // $stmt1->close();
-                    
-                    } else {
-                        echo "Database connection failed.";
-                    }
-                    ?> -->
-                    <li class="nav-item mb-3">
-                        <a href="notifications.php" class="nav-link">Notifications 
-                            <!-- <?php if ($requestCount12 > 0 ||$num > 0): ?>
-                            <span class="badge"><?php
-                                 echo $requestCount12; 
-                                 ?></span>
-                        <?php endif; ?> -->
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a href="logout.php" class="nav-link text-danger">Logout</a>
-                    </li>
-                </ul>
-            </nav>
+            <?php include 'admin_nav.php' ?>
 
             <!-- Main Content -->
             <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
                     <h1 class="h2">View Enrollments</h1>
-                  <a href="enroll.php"> <button class="btn btn-sm btn-primary">Add New Enrollment</button></a> 
+                  <!-- <a href="enroll.php"> <button class="btn btn-sm btn-primary">Add New Enrollment</button></a>  -->
                   <div class="download-container">
                     <span class="download-icon">⬇</span>
                     <div class="dropdown">
@@ -205,10 +149,7 @@
         $x = 5;
 
         // Prepare the statement to select data from the 'exhibits' table
-        $stmt = $con->prepare("
-            SELECT Id,First_name,Last_name,Phone_no,Age,Parent_name,Disabilities 
-            FROM cleints
-        ");
+        $stmt = $con->prepare("SELECT Id,First_name,Last_name,Phone_no,Age,Parent_name,Disabilities  FROM approved_clients");
 
         // Execute the statement
         $stmt->execute();
@@ -219,7 +160,6 @@
         // Fetch the data and display it in the table
         while ($stmt->fetch()) {
             echo "
-            <tr>
                 <td>{$Id}</td>
                 <td>{$firstname}</td>
                 <td>{$lastname}</td>
@@ -227,17 +167,13 @@
                 <td>{$age}</td>
                 <td>{$parent}</td>
                 <td>{$disability}</td>
-                <td>
-                   
-                </td>
-            </tr>
-            ";
+                ";
             // $x++;
         }
     }
         ?>
                                     <td>
-                                        <button class="btn btn-sm btn-primary">View</button>
+                                        <button class="btn btn-sm btn-primary view-btn">View</button>
                                     </td>
                                 </tr>
                                 <!-- <tr>

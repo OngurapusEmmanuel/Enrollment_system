@@ -22,43 +22,59 @@ if ($_SERVER["REQUEST_METHOD"]==="POST") {
 	require_once "includes/config.php";
 	$con;
 	if ($con) {
-		$stmt = $con->prepare("SELECT id,Firstname, Password FROM user WHERE Email = ?");
+		$stmt = $con->prepare("SELECT Firstname, `Password`,`Role` FROM users WHERE Email = ?");
 		$stmt->bind_param('s', $email);
 		$stmt->execute();
 		$stmt->store_result();
-		$stmt->bind_result($id,$Firstname, $Password);
+		$stmt->bind_result($Firstname, $Password,$Role);
 		while ($stmt->fetch()) {
 			$pw = $Password;
 			$name = $Firstname;
-            $Login_id=$id;
-		}
-		$numRows = $stmt->num_rows;
+            $role=$Role;
+
+            $numRows = $stmt->num_rows;
 		if ($numRows === 0) {
 			$error="email not found";
 		} else {
-			// if (password_verify($P assword, $pw) == false) {
-            if($password!=$pw){
-				echo "invalid password! Try again";
+			if (password_verify($Password, $pw) == false) {
+            // if($password!=$pw){
+				echo "<script>
+                alert('invalid password! Try again');
+                </script>";
+                header(Location:login.php);
 			} else {
-				require_once "includes/sessions.php";
-				$_SESSION["id"] = $login_id;
+                if ($role='admin'|| 'moderator'||'Admin') {
+                    require_once "includes/sessions.php";
 				$_SESSION["name"] = $name;
-				header("Location:index.php?id=" . $login_id);
+                $_SESSION["role"]=$role;
+				header("Location: admin-dashboard.php");
+
+                }else if ($role='user') {
+                    require_once "includes/sessions.php";
+                    $_SESSION["name"] = $name;
+                    $_SESSION["role"]=$role;
+                    header("Location: user-dashboard.php");
+
+                } else{
+                    header("Location: login.php");
+                }
+				
 			}
 		}
+           
+		}
+		
 	} else {
 		echo "server prob";
 	}
+    $con->close();
 }
 ?>
 
     <!-- client login form -->
     <div class="container">
         <form action="" method="post">
-                <!-- <div class="error"><?php 
-                //echo $error;
-                 ?> </div> -->
-
+           
             <div class="imgcontainer">
                 <img src="images/user.png" alt="Avatar" class="avatar">
             </div>
@@ -81,10 +97,10 @@ if ($_SERVER["REQUEST_METHOD"]==="POST") {
             </div>
 
             <div class="container" style="background-color:#fff">
-                <!-- <button type="button" class="cancelbtn" onclick="window.location.href='index.php'">
+                <button type="button" class="cancelbtn" onclick="window.location.href='index.php'">
                     Cancel
-                </button> -->
-                <!-- <span class="psw">Forgot <a href="#">password?</a></span> -->
+                </button>
+                <span class="psw"><a href="#">Forgot password?</a></span>
             </div>
         </form>
     </div>

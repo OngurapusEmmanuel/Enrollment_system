@@ -1,3 +1,14 @@
+<?php
+require_once "includes/sessions.php";
+if (isset($_SESSION["name"])) {
+
+    header("Location:index.php");
+   
+  }
+  else {
+      header("Location:login.php");
+  }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +31,7 @@
 <body>
     <div class="container mt-5">
         <h1 class="text-center mb-4">Enroll Client</h1>
-        <form id="enrollForm" action="submit_form.php" method="post">
+        <form id="enrollForm" action="" method="post">
             <!-- Step 1: Personal Information -->
             <div class="step active" id="step1">
                 <h3>Step 1: Personal Information</h3>
@@ -93,19 +104,19 @@
                         </div>
                         <label class="form-label">Types of Disabilities:</label><br>
                         <div class="form-check form-check-inline">
-                            <input type="checkbox" name="disabilities[1]" value="CP" class="form-check-input" id="cp">
+                            <input type="checkbox" name="disabilities[0]" value="CP" class="form-check-input" id="cp">
                             <label for="cp" class="form-check-label">C.P</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input type="checkbox" name="disabilities[2]" value="Autism" class="form-check-input" id="autism">
+                            <input type="checkbox" name="disabilities[1]" value="Autism" class="form-check-input" id="autism">
                             <label for="autism" class="form-check-label">Autism</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input type="checkbox" name="disabilities[]3" value="MR" class="form-check-input" id="mr">
+                            <input type="checkbox" name="disabilities[2]" value="MR" class="form-check-input" id="mr">
                             <label for="mr" class="form-check-label">MR</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input type="checkbox" name="disabilities[4]" value="MD" class="form-check-input" id="md">
+                            <input type="checkbox" name="disabilities[3]" value="MD" class="form-check-input" id="md">
                             <label for="md" class="form-check-label">MD</label>
                         </div>
                     </div>
@@ -146,7 +157,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Support from Govt/NGO:</label><br>
                         <div class="form-check">
-                            <input type="checkbox" name="support[]" value="Scholarship" class="form-check-input" id="scholarship">
+                            <input type="checkbox" name="support[0]" value="Scholarship" class="form-check-input" id="scholarship">
                             <label for="scholarship" class="form-check-label">Scholarship</label>
                         </div>
                         <div class="form-check">
@@ -230,6 +241,8 @@
     </script>
 <?php
 require_once("includes/config.php");
+//start trnsaction
+$con->begin_transction();
 
 // Get form data
 
@@ -242,9 +255,9 @@ $age = $_POST['age'];
 $gender = $_POST['gender'];
 $education = $_POST['education'];
 $category = $_POST['category'];
-$disabilities = implode(", ", $_POST['disabilities']);
+$disabilities = implode(", ", $_POST['disabilities[]']);
 $disability_certificate = $_POST['disability_certificate'];
-$support = implode(", ", $_POST['support']);
+$support = implode(", ", $_POST['support[]']);
 $bpl = $_POST['bpl'];
 $parent_occupation = $_POST['parent_occupation'];
 $guardian_name = $_POST['guardian_name'];
@@ -252,21 +265,35 @@ $guardian_relation = $_POST['guardian_relation'];
 $health_insurance = $_POST['health_insurance'];
 $other_info = $_POST['other_info'];
 
-// Insert data into database
-$sql = "INSERT INTO enrollment_data ( First_name,Last_name,Email,phone_no,Parent_name,Age,Gender,Education,Category,Disabilities,Disability_certificat,Support,Bpl,Parent_occupation,Guardian_name ,Guardian_relation,Health_insurance,Other_info )
-VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )";
+try {
+   // Insert data into database
+$stmt = $con->prepare("INSERT INTO clients ( First_name,Last_name,Email,phone_no,Parent_name,Age,Gender,Education,Category,Disabilities,Disability_certificate,Support,Bpl,Parent_occupation,Guardian_name ,Guardian_relation,Health_insurance,Other_info )
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )");
 
 // Bind the parameters
 $stmt->bind_param("ssssssssssssssssss",'$firstname','$lastname','$email','$phone','$parent_name', '$age', '$gender', '$education', '$category', '$disabilities', '$disability_certificate', '$support', '$bpl', '$parent_occupation', '$guardian_name', '$guardian_relation', '$health_insurance', '$other_info');
 
-
-if ($conn->query($sql) === TRUE) {
-    echo "New record created successfully";
+$stmt->execute();
+if ($stmt->affected_rows === -1) {
+    echo "Error";
 } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+ echo "<script>
+    alert('new record updated successfully!');
+    
+</script>";
+header("Location:user-dashboard.php");
+$con->commit();
+
+}
+} catch (Throwable $th) {
+    $con->rollback();
+    echo "<script>
+    alert('Error '.$th->getMessage());
+    </script>";
+
 }
 
-$conn->close();
+$con->close();
 ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

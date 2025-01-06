@@ -26,63 +26,7 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar bg-dark text-white p-3">
-                <h4 class="text-center mb-4">Admin Dashboard</h4>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-3">
-                        <a href="admin-dashboard.php" class="nav-link">Dashboard Home</a>
-                    </li>
-                    <li class="nav-item mb-3">
-                        <a href="view-enrollments.php" class="nav-link">View Enrollments</a>
-                    </li>
-                    <li class="nav-item mb-3">
-                        <a href="manage-users.php" class="nav-link">Manage Users</a>
-                    </li>
-                    
-                    <!-- <?php
-                    // Include database connection file
-                    require_once("includes/config.php");
-                    
-                    $requestCount = 0;
-                    $num=0;
-                    if ($con) {
-                        // Prepare an SQL statement to count rows
-                        $stmt = $con->prepare("SELECT COUNT(*) FROM notifications");
-                        
-                        // Execute the statement
-                        if ($stmt->execute()) {
-                            // Bind the result to a variable
-                            $stmt->bind_result($requestCount);
-                            $stmt->fetch();
-                        }
-                        // if($stmt1->execute()){
-                        //     $stmt1->bind_result($num);
-                        //     $stmt1->fetch();
-                        // }
-                    
-                        // Close the statement and connection
-                        $stmt->close();
-                        // $stmt1->close();
-                    
-                    } else {
-                        echo "Database connection failed.";
-                    }
-                    ?> -->
-                    <li class="nav-item mb-3">
-                        <a href="notifications.php" class="nav-link">Notifications 
-                            <!-- <?php if ($requestCount > 0 ||$num > 0): ?>
-                            <span class="badge"><?php
-                                 echo $requestCount; 
-                                 ?></span>
-                        <?php endif; ?> -->
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a href="logout.php" class="nav-link text-danger">Logout</a>
-                    </li>
-                </ul>
-            </nav>
+            <?php include 'admin_nav.php' ?>
 
             <!-- Main Content -->
             <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4">
@@ -162,23 +106,26 @@
         while ($stmt->fetch()) {
             echo "
             <tr>
-                <td>{$Id}</td>
-                <td>{$firstname}</td>
-                <td>{$lastname}</td>
-                <td>{$email}</td>
-                <td>{$phone}</td>
-                <td>{$role}</td>
-                <td>{$status}</td>
+                <td data-Id='" . htmlspecialchars($Id) . "'>{$Id}</td>
+                <td data-firstname='" . htmlspecialchars($firstname) . "'>{$firstname}</td>
+                <td data-lastname='" . htmlspecialchars($lastname) . "'>{$lastname}</td>
+                <td data-email='" . htmlspecialchars($email) . "'>{$email}</td>
+                <td data-phone='" . htmlspecialchars($phone) . "'>{$phone}</td>
+                <td data-role='" . htmlspecialchars($role) . "'>{$role}</td>
+                <td data-status='" . htmlspecialchars($status) . "'>{$status}</td>
                 <td>
-                   
-                </td>
+                <td>
+</td>
             </tr>
             ";
-            $x++;
+           
         }
     }
         ?>
-       
+       <td>
+                                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button>
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </td>
                                 </tr>
                                 <!-- <tr>
                                     <td>2</td>
@@ -206,29 +153,67 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                  
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+<?php
+    if ($_SERVER["REQUEST_METHOD"]==="POST") {
+    $firstname= htmlspecialchars($_POST["firstName"]);
+    $lastname= htmlspecialchars($_POST["lastName"]);
+    $phone= htmlspecialchars($_POST["phoneNumber"]);
+    $role= htmlspecialchars($_POST["userRole"]);
+    $status= htmlspecialchars($_POST["userStatus"]);
+	$email = htmlspecialchars($_POST["userEmail"]);
+	$password = htmlspecialchars($_POST["password"]);
+ $hashedpwd = password_hash($password, PASSWORD_BCRYPT);
+	require_once "includes/config.php";
+	if ($con) {
+	
+    // Insert data into database
+    $stmt = $con->prepare("INSERT INTO users(`Firstname`,`Lastname`,`Email`,`Phone Number`,`Role`,`Status`,`Password`)VALUES(?,?,?,?,?,?,?)");
+
+    $stmt->bind_param('sssssss', $firstname, $lastname, $email,$phone,$role,$status,$hashedpwd);
+    
+    $stmt->execute();
+    if ($stmt->affected_rows === -1) {
+        echo "Error";
+    } else {
+     echo "<script>
+        alert('User created successfully!');
+        
+    </script>";
+        $stmt->close();
+        // alert("User created successfully");
+       
+        // header("Location: manage-users.php");
+    }
+
+
+}
+$con->close();
+}
+?>
                 <div class="modal-body">
-                    <form>
+                    <form action="" method="post">
                         <div class="mb-3">
                             <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" name="firstName" class="form-control" id="firstName">
+                            <input type="text" name="firstName" class="form-control" id="firstName" required>
                         </div>
                         <div class="mb-3">
                             <label for="lastName" class="form-label"> Last Name</label>
-                            <input type="text" name="lastName" class="form-control" id="lastName">
+                            <input type="text" name="lastName" class="form-control" id="lastName" required>
                         </div>
                         <div class="mb-3">
                             <label for="userEmail" class="form-label">Email</label>
-                            <input type="email" name="userEmail" class="form-control" id="userEmail">
+                            <input type="email" name="userEmail" class="form-control" id="userEmail" required>
                         </div>
                         <div class="mb-3">
                             <label for="phoneNumber" class="form-label">phone number</label>
-                            <input type="number" name="phoneNumber" class="form-control" id="phoneNumber">
+                            <input type="number" name="phoneNumber" class="form-control" id="phoneNumber" required>
                         </div>
                         <div class="mb-3">
                             <label for="userRole" class="form-label">Role</label>
-                            <select class="form-select" id="userRole">
+                            <select class="form-select" name="userRole" id="userRole">
                                 <option value="admin">Admin</option>
                                 <option value="user">User</option>
                                 <option value="moderator">Moderator</option>
@@ -236,14 +221,14 @@
                         </div>
                         <div class="mb-3">
                             <label for="userStatus" class="form-label">Status</label>
-                            <select class="form-select" id="userStatus">
+                            <select class="form-select" name="userStatus" id="userStatus">
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password">
+                            <input type="password" name="pasword" class="form-control" id="password" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Add</button>
                     </form>
@@ -260,8 +245,56 @@
                     <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                
+                <?php
+
+if ($_SERVER["REQUEST_METHOD"]==="POST") {
+    $firstname=($_POST["firstName"]);
+    $lastname=($_POST["lastName"]);
+    $phone=($_POST["phoneNumber"]);
+    $role=($_POST["userRole"]);
+    $status=($_POST["userStatus"]);
+	$email = ($_POST["userEmail"]);
+	$password = ($_POST["password"]);
+	require_once "includes/config.php";
+	$con;
+	
+    // Insert data into database
+$stmt = $con->prepare( "UPDATE users SET `Email`= ? , `Phone Number` = ? `Role`=? `Status`=? WHERE `Firstname`= ?" );
+
+$stmt->bind_param('sssss',$email, $phone, $role, $status,$firstname);
+
+$stmt->execute();
+if ($stmt->affected_rows === -1) {
+    echo "Error";
+} else {
+    echo "<script>
+    alert('Infor updated successfully!');
+    
+</script>";
+    $stmt->close();
+    // alert("User created successfully");
+   
+    header("Location: manage-users.php");
+}
+// $stmt->execute();
+// if ( $stmt->execute()) {
+//     echo "<script>
+//     alert('Infor updated successfully!');
+    
+// </script>";
+// $stmt->close();
+// // window.location.href = 'admin-dashboard.php';
+// } else {
+//     echo "Error: " . $sql . "<br>" . $conn->error;
+// }
+
+$con->close();
+}
+?>
+
                 <div class="modal-body">
-                    <form action="manageusers.php?id=<?php echo $_GET['id']; ?>" method="post">
+                    <form action="" method="post">
                         <div class="mb-3">
                             <label for="firstName" class="form-label">First Name</label>
                             <input type="text" name="firstName"  value="<?php echo $firstname; ?>" class="form-control" id="firstName">
@@ -281,7 +314,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="editUserRole" class="form-label">Role</label>
-                            <select class="form-select" id="editUserRole">
+                            <select class="form-select" name="userRole" id="editUserRole">
                                 <option value="admin">Admin</option>
                                 <option value="user">User</option>
                                 <option value="moderator">Moderator</option>
@@ -289,7 +322,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="editUserStatus" class="form-label">Status</label>
-                            <select class="form-select" id="editUserStatus">
+                            <select class="form-select" name="userStatus" id="editUserStatus">
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>

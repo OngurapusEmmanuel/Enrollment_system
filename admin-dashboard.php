@@ -1,3 +1,14 @@
+<?php 
+// require_once("includes/sessions.php");
+
+// if (!isset($_SESSION["name"])) {
+
+//   header("Location:login.php");
+//  exit();
+// }
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +17,7 @@
     <title>Admin Dashboard</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>src="js/dashboard.js"></script>
     <style>
         body {
             background-color: #f8f9fa;
@@ -25,61 +37,8 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar bg-dark text-white p-3">
-                <h4 class="text-center mb-4">Admin Dashboard</h4>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-3">
-                        <a href="#" class="nav-link">Dashboard Home</a>
-                    </li>
-                    <li class="nav-item mb-3">
-                        <a href="view-enrollments.php" class="nav-link">View Enrollments</a>
-                    </li>
-                    <li class="nav-item mb-3">
-                        <a href="manage-users.php" class="nav-link">Manage Users</a>
-                    </li>
-                    <?php
-                    // Include database connection file
-                    require_once("includes/config.php");
-                    
-                    $requestCount = 0;
-                    $num=0;
-                    if ($con) {
-                        // Prepare an SQL statement to count rows
-                        $stmt = $con->prepare("SELECT COUNT(*) FROM notifications");
-                        
-                        // Execute the statement
-                        if ($stmt->execute()) {
-                            // Bind the result to a variable
-                            $stmt->bind_result($requestCount);
-                            $stmt->fetch();
-                        }
-                        // if($stmt1->execute()){
-                        //     $stmt1->bind_result($num);
-                        //     $stmt1->fetch();
-                        // }
-                    
-                        // Close the statement and connection
-                        $stmt->close();
-                        // $stmt1->close();
-                    
-                    } else {
-                        echo "Database connection failed.";
-                    }
-                    ?>
-                    <li class="nav-item mb-3">
-                        <a href="notifications.php" class="nav-link">Notifications 
-                            <?php if ($requestCount > 0 ||$num > 0): ?>
-                            <span class="badge"><?php
-                                 echo $requestCount; 
-                                 ?></span>
-                        <?php endif; ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="logout.php" class="nav-link text-danger">Logout</a>
-                    </li>
-                </ul>
-            </nav>
+            <?php include 'admin_nav.php' ?>
+          
 
             <!-- Main Content -->
             <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4">
@@ -99,12 +58,12 @@
                     $num=0;
                     if ($con) {
                         // Prepare an SQL statement to count rows
-                        $stmt = $con->prepare("SELECT COUNT(*) FROM cleints");
+                        $stmt = $con->prepare("SELECT COUNT(*) FROM approved_clients");
                         
                         // Execute the statement
                         if ($stmt->execute()) {
                             // Bind the result to a variable
-                            $stmt->bind_result($requestCount);
+                            $stmt->bind_result($requestCount1);
                             $stmt->fetch();
                         }
                         // if($stmt1->execute()){
@@ -125,7 +84,7 @@
                                 <h5 class="card-title">Total Enrollments</h5>
                                 <p class="card-text display-4"><?php if ($requestCount1 > 0 ||$num > 0): ?>
                             <?php
-                                 echo $requestCount; 
+                                 echo $requestCount1; 
                                  ?>
                         <?php endif; ?></p>
                             </div>
@@ -133,17 +92,84 @@
                     </div>
                     <div class="col-md-4">
                         <div class="card text-white bg-success">
+                        <?php
+                    // Include database connection file
+                    require_once("includes/config.php");
+                    
+                    $requestCount2 = 0;
+                    $num=0;
+                    if ($con) {
+                        // Prepare an SQL statement to count rows
+                        $stmt = $con->prepare("SELECT COUNT(*) FROM users");
+                        
+                        // Execute the statement
+                        if ($stmt->execute()) {
+                            // Bind the result to a variable
+                            $stmt->bind_result($requestCount2);
+                            $stmt->fetch();
+                        }
+                        // if($stmt1->execute()){
+                        //     $stmt1->bind_result($num);
+                        //     $stmt1->fetch();
+                        // }
+                    
+                        // Close the statement and connection
+                        $stmt->close();
+                        // $stmt1->close();
+                    
+                    } else {
+                        echo "Database connection failed.";
+                    }
+                    ?>
                             <div class="card-body">
-                                <h5 class="card-title">Completed Trainings</h5>
-                                <p class="card-text display-4">800</p>
+                                <h5 class="card-title">Active Users</h5>
+                                <p class="card-text display-4"><?php if ($requestCount2 > 0 ||$num > 0): ?>
+                            <?php
+                                 echo $requestCount2; 
+                                 ?>
+                        <?php endif; ?>
+                        </p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card text-white bg-warning">
+                        <?php
+                    // Include database connection file
+                    require_once("includes/config.php");
+                    
+                    $requestCount3 = 0;
+                    $num=0;
+                    if ($con) {
+                        // Prepare an SQL statement to count rows
+                        $stmt = $con->prepare("SELECT COUNT(*) FROM clients");
+                        
+                        // Execute the statement
+                        if ($stmt->execute()) {
+                            // Bind the result to a variable
+                            $stmt->bind_result($requestCount3);
+                            $stmt->fetch();
+                        }
+                        // if($stmt1->execute()){
+                        //     $stmt1->bind_result($num);
+                        //     $stmt1->fetch();
+                        // }
+                    
+                        // Close the statement and connection
+                        $stmt->close();
+                        // $stmt1->close();
+                    
+                    } else {
+                        echo "Database connection failed.";
+                    }
+                    ?>
                             <div class="card-body">
                                 <h5 class="card-title">Pending Approvals</h5>
-                                <p class="card-text display-4">32</p>
+                                <p class="card-text display-4"><?php if ($requestCount3 > 0 ||$num > 0): ?>
+                            <?php
+                                 echo $requestCount3; 
+                                 ?>
+                        <?php endif; ?></p>
                             </div>
                         </div>
                     </div>
@@ -163,7 +189,7 @@
                         </div>
                         <div class="col-md-4">
                             <label for="status" class="form-label">Status</label>
-                            <select class="form-select" id="status">
+                            <select class="form-select"  id="status">
                                 <option value="">All</option>
                                 <option value="completed">Completed</option>
                                 <option value="pending">Pending</option>
@@ -207,7 +233,7 @@
         // Prepare the statement to select data from the 'exhibits' table
         $stmt = $con->prepare("
             SELECT Id,First_name,Last_name,Email,Phone_no,Age,Parent_name,Disabilities 
-            FROM cleints
+            FROM approved_clients
         ");
 
         // Execute the statement
@@ -219,7 +245,7 @@
         // Fetch the data and display it in the table
         while ($stmt->fetch()) {
             echo "
-            <tr>
+            
                 <td>{$Id}</td>
                 <td>{$firstname}</td>
                 <td>{$lastname}</td>
@@ -228,31 +254,17 @@
                 <td>{$age}</td>
                 <td>{$parent}</td>
                 <td>{$disability}</td>
-                <td>
-                   
-                </td>
-            </tr>
+                
             ";
             // $x++;
         }
     }
         ?>
                                     <td>
-                                        <button class="btn btn-sm btn-primary">View</button>
+                                        <button class="btn btn-sm btn-primary view-btn">View</button>
                                     </td>
                                 </tr>
-                                <!-- <tr>
-                                    <td>2</td>
-                                    <td>Jane Smith</td>
-                                    <td>Graphic Design Workshop</td>
-                                    <td><span class="badge bg-warning">Pending</span></td>
-                                    <td>2024-02-10</td>
-                                    <td>2024-03-01</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-primary view-btn" data-id="2">View</button>
-                                    </td>
-                                </tr> -->
-                                <!-- Add more rows as needed -->
+                                
                             </tbody>
                         </table>
                     </div>
@@ -270,11 +282,26 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p><strong>Name:</strong> <span id="modalName"></span></p>
-                    <p><strong>Program:</strong> <span id="modalProgram"></span></p>
-                    <p><strong>Status:</strong> <span id="modalStatus"></span></p>
-                    <p><strong>Start Date:</strong> <span id="modalStartDate"></span></p>
-                    <p><strong>End Date:</strong> <span id="modalEndDate"></span></p>
+                    <p><strong>First Name:</strong> <span id="modalFirstName"></span></p>
+                    <p><strong>Last Name:</strong> <span id="modalLastName"></span></p>
+                    <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                    <p><strong>Phone Number:</strong> <span id="modalPhone"></span></p>
+                    <p><strong>Age:</strong> <span id="modalAge"></span></p>
+                    <p><strong>Gender:</strong> <span id="modalGender"></span></p>
+
+                    <p><strong>Parent Name:</strong> <span id="modalParentName"></span></p>
+                    <p><strong>Parent Occupation:</strong> <span id="modalParent_occup"></span></p>
+                    <p><strong>Highest Education Qualification:</strong> <span id="modalEducation"></span></p>
+                    <p><strong>Category:</strong> <span id="modalCategory"></span></p>
+                    <p><strong>Disabilities Type:</strong> <span id="modalDisabilities"></span></p>
+                    <p><strong>Received Disability Certificate:</strong> <span id="modalDisability_cert"></span></p>
+
+                    <p><strong>Government Support:</strong> <span id="modalSupport"></span></p>
+                    <p><strong>Bpl:</strong> <span id="modalBpl"></span></p>
+                    <p><strong>Guardian Name:</strong> <span id="modalGuardian_name"></span></p>
+                    <p><strong>Guardian Relationship:</strong> <span id="modalGuardial_rel"></span></p>
+                    <p><strong>Has Health Insurance:</strong> <span id="modalHealth_insu"></span></p>
+
                     <!-- Add more fields as needed -->
                 </div>
                 <div class="modal-footer">
@@ -292,16 +319,45 @@
                 button.addEventListener("click", function() {
                     const id = this.getAttribute("data-id");
 
+                    <?php
+// Database connection
+require_once("includes/config.php");
+
+$id = $_GET['id'];
+$stmt = $conn->prepare("SELECT *FROM your_table WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$data = $result->fetch_assoc();
+
+echo json_encode($data);
+
+$stmt->close();
+$conn->close();
+?>
+
                     // Fetch data from the server
-                    fetch(`get-details.php?id=${id}`)
+                    fetch(`id=${id}`)
                         .then(response => response.json())
                         .then(data => {
                             // Populate modal fields
-                            document.getElementById("modalName").textContent = data.name;
-                            document.getElementById("modalProgram").textContent = data.program;
-                            document.getElementById("modalStatus").textContent = data.status;
-                            document.getElementById("modalStartDate").textContent = data.start_date;
-                            document.getElementById("modalEndDate").textContent = data.end_date;
+                            document.getElementById("modalFirstName").textContent = data.First_name;
+                            document.getElementById("modalLatName").textContent = data.Last_name;
+                            document.getElementById("modalEmail").textContent = data.Email;
+                            document.getElementById("modalPhone").textContent = data.Phone_no;
+                            document.getElementById("modalParentName").textContent = data.Parent_name;
+                            document.getElementById("modalAge").textContent = data.Age;
+                            document.getElementById("modalGender").textContent = data.Gender;
+                            document.getElementById("modalEducation").textContent = data.Education;
+                            document.getElementById("modalCategory").textContent = data.Category;
+                            document.getElementById("modalDisabilities").textContent = data.Disabilities;
+                            document.getElementById("modalDisability_cert").textContent = data.Disability_certificate;
+                            document.getElementById("modalSupport").textContent = data.Support;
+                            document.getElementById("modalBpl").textContent = data.Bpl;
+                            document.getElementById("modalParent_occup").textContent = data.Parent_occupation;
+                            document.getElementById("modalGuardian_name").textContent = data.Guardian_name;
+                            document.getElementById("modalGurdian_rel").textContent = data.Guardian_relation;
+                            document.getElementById("modalHealth_insu").textContent = data.Health_insurance;
 
                             // Show the modal
                             const viewModal = new bootstrap.Modal(document.getElementById("viewModal"));

@@ -1,4 +1,14 @@
-<!DOCTYPE html>
+
+<?php
+ require_once("includes/sessions.php");
+
+// if (!isset($_SESSION["name"])) {
+
+//   header("Location:login.php");
+//  exit();
+// }
+ ?>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -31,32 +41,12 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar p-3">
-                <h4 class="text-center mb-4">Client Management Dashboard</h4>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-3">
-                        <a href="#" class="nav-link">Dashboard Home</a>
-                    </li>
-                   
-                    <li class="nav-item mb-3">
-                        <a href="enroll.php" class="nav-link">Enroll Clients</a>
-                    </li>
-                    <li class="nav-item mb-3">
-                        <a href="#" class="nav-link">Notifications</a>
-                    </li>
-                    <li class="nav-item mb-3">
-                        <a href="#" class="nav-link">Support</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="logout.php" class="nav-link text-danger">Logout</a>
-                    </li>
-                </ul>
-            </nav>
+            <?php include 'user_nav.php' ?>
 
             <!-- Main Content -->
             <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
-                    <h1 class="h2">Welcome, Admin</h1>
+                    <h1 class="h2">Welcome,<?php echo $_SESSION["name"]; ?></h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <button class="btn btn-sm btn-outline-secondary">Edit Profile</button>
                     </div>
@@ -69,12 +59,12 @@
                             <?php
                             // Include database connection file
                             require_once("includes/config.php");
-                            
+
                             $requestCount1 = 0;
                             $num=0;
                             if ($con) {
                                 // Prepare an SQL statement to count rows
-                                $stmt = $con->prepare("SELECT COUNT(*) FROM cleints");
+                                $stmt = $con->prepare("SELECT COUNT(*) FROM clients");
                                 
                                 // Execute the statement
                                 if ($stmt->execute()) {
@@ -111,12 +101,13 @@
                             <?php
                             // Include database connection file
                             require_once("includes/config.php");
+
                             
                             $requestCount11 = 0;
                             $num=0;
                             if ($con) {
                                 // Prepare an SQL statement to count rows
-                                $stmt = $con->prepare("SELECT COUNT(*) FROM cleints");
+                                $stmt = $con->prepare("SELECT COUNT(*) FROM clients");
                                 
                                 // Execute the statement
                                 if ($stmt->execute()) {
@@ -149,7 +140,7 @@
                     <div class="col-md-4">
                         <div class="card text-white bg-warning mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">Pending Enrollments</h5>
+                                <h5 class="card-title">Pending Approvals</h5>
                                 <p class="card-text display-4">15</p>
                             </div>
                         </div>
@@ -188,7 +179,7 @@
         // Prepare the statement to select data from the 'exhibits' table
         $stmt = $con->prepare("
             SELECT Id,First_name,Last_name,Email,Phone_no,Age,Parent_name,Disabilities 
-            FROM cleints
+            FROM clients
         ");
 
         // Execute the statement

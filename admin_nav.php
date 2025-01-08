@@ -15,7 +15,7 @@
                         <a href="manage-users.php" class="nav-link">Manage Users</a>
                     </li>
                     <li class="nav-item mb-3">
-                        <a href="#" class="nav-link">Vacancy applications</a>
+                        <a href="applications.php" class="nav-link">Vacancy applications</a>
                     </li>
                     <?php
                     // Include database connection file

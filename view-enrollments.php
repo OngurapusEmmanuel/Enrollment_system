@@ -1,11 +1,11 @@
 <?php 
-// require_once("includes/sessions.php");
+require_once("includes/sessions.php");
 
-// if (!isset($_SESSION["name"])) {
+if (!isset($_SESSION["name"])) {
 
-//   header("Location:login.php");
-//  exit();
-// }
+  header("Location:login.php");
+ exit();
+}
 
 
 ?>

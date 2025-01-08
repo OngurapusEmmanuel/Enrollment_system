@@ -1,3 +1,14 @@
+<?php 
+// require_once("includes/sessions.php");
+
+// if (!isset($_SESSION["name"])) {
+
+//   header("Location:login.php");
+//  exit();
+// }
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +21,10 @@
         body {
             background-color: #f8f9fa;
         }
+        html {
+    scroll-behavior: smooth;
+}
+
         .card {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }

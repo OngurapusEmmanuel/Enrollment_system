@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang=”en”>
+<head>
+    <meta charset=”UTF-8”>
+    <meta name=”viewport” content=”width=device-width, initial-scale=1.0”>
+    <title>User Dashboard</title>
+    <link rel=”stylesheet” href=”styles.css”>
+</head>
+<body>
+    <!—Header Section 
+    <header>
+        <h1>User Dashboard</h1>
+    </header>
+
+    <!—Notification Section 
+    <section id=”notification-section”>
+        <h2>Notifications</h2>
+        <div id=”notifications-list”>
+            <!—Notifications will be dynamically added here 
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 User Dashboard. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Fetch notifications from the backend API
+        Async function fetchNotifications() {
+            Try {
+                Const response = await fetch(‘/api/notifications’);
+                If (!response.ok) {
+                    Throw new Error(‘Failed to fetch notifications’);
+                }
+                Const notifications = await response.json();
+                displayNotifications(notifications);
+            } catch (error) {
+                Console.error(‘Error:’, error);
+            }
+        }
+
+        // Display notifications on the page
+        Function displayNotifications(notifications) {
+            Const notificationsList = document.getElementById(‘notifications-list’);
+            notificationsList.innerHTML = ‘’; // Clear existing notifications
+
+            notifications.forEach(notification => {
+                const notificationDiv = document.createElement(‘div’);
+                notificationDiv.classList.add(‘notification’);
+                notificationDiv.innerHTML = `
+                    <h3>${notification.title}</h3>
+                    <p>${notification.content}</p>
+                `;
+                notificationsList.appendChild(notificationDiv);
+            });
+        }
+
+        // Call the function to fetch notifications when the page loads
+        Window.onload = fetchNotifications;
+    </script>
+</body>
+</html>

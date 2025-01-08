@@ -1,7 +1,7 @@
 <nav class="col-md-3 col-lg-2 d-md-block sidebar bg-dark text-white p-3">
 <h1 class="h2">Welcome,
     <?php
-    //  echo $_SESSION["name"]; 
+     echo $_SESSION["name"]; 
      ?>
      </h1>
                 <ul class="nav flex-column">
@@ -13,6 +13,9 @@
                     </li>
                     <li class="nav-item mb-3">
                         <a href="manage-users.php" class="nav-link">Manage Users</a>
+                    </li>
+                    <li class="nav-item mb-3">
+                        <a href="#" class="nav-link">Vacancy applications</a>
                     </li>
                     <?php
                     // Include database connection file
@@ -44,14 +47,25 @@
                     }
                     ?>
                     <li class="nav-item mb-3">
-                        <a href="notifications.php" class="nav-link">Notifications 
-                            <?php if ($requestCount > 0 ||$num > 0): ?>
-                            <span class="badge"><?php
-                                 echo $requestCount; 
-                                 ?></span>
-                        <?php endif; ?>
-                        </a>
-                    </li>
+    <?php
+    $currentPage = basename($_SERVER['PHP_SELF']);
+    if ($currentPage == "admin-dashboard.php"): ?>
+        <!-- Link directly to the section on the same page -->
+        <a href="#notification-list" class="nav-link">Notifications
+            <?php if ($requestCount > 0): ?>
+            <span class="badge bg-danger"><?php echo $requestCount; ?></span>
+            <?php endif; ?>
+        </a>
+    <?php else: ?>
+        <!-- Redirect to admin-dashboard.php and scroll to the section -->
+        <a href="admin-dashboard.php#notification-list" class="nav-link">Notifications
+            <?php if ($requestCount > 0): ?>
+            <span class="badge bg-danger"><?php echo $requestCount; ?></span>
+            <?php endif; ?>
+        </a>
+    <?php endif; ?>
+</li>
+
                     <li class="nav-item">
                         <a href="logout.php" class="nav-link text-danger">Logout</a>
                     </li>

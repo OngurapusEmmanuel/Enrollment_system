@@ -1,3 +1,15 @@
+
+<?php 
+// require_once("includes/sessions.php");
+
+// if (!isset($_SESSION["name"])) {
+
+//   header("Location:login.php");
+//  exit();
+// }
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,6 +31,10 @@
             padding: 15px;
             margin-bottom: 20px;
         }
+        html {
+    scroll-behavior: smooth;
+}
+
     </style>
 </head>
 <body>

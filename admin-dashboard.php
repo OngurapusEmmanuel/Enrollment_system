@@ -18,6 +18,8 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script>src="js/dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
         body {
             background-color: #f8f9fa;
@@ -31,6 +33,24 @@
             padding: 15px;
             margin-bottom: 20px;
         }
+        html {
+    scroll-behavior: smooth;
+}
+
+        #notification-list table {
+    Width: 100%;
+    Border-collapse: collapse;
+}
+
+#notification-list th, #notification-list td {
+    Padding: 10px;
+    Border: 1px solid #ddd;
+    Text-align: left;
+}
+
+#notification-list th {
+    Background-color: #f2f2f2;
+}
     </style>
 </head>
 <body>
@@ -313,6 +333,119 @@ while ($stmt->fetch()) {
                         </table>
                     </div>
                 </div>
+                
+                <div class="filter-section">
+    <!-- <h5>Filter Enrollments</h5> -->
+    <!—Notification List Section -->
+<section id="notification-list">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <h2>Posted Notifications</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#postNotificationModal">Post notification</button>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            Reports
+        </div>
+        <div class="card-body">
+        <table class="table table-striped" id="notificationTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $result = $con->query("SELECT * FROM notifications");
+                while ($row = $result->fetch_assoc()) {
+                    echo "<tr>";
+                    echo "<td>" . htmlspecialchars($row['id']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['title']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['content']) . "</td>";
+                    echo "<td>
+                            <button class='btn btn-danger btn-sm' onclick='deleteNotification(" . $row['id'] . ")'>Delete</button>
+                          </td>";
+                    echo "</tr>";
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Post Notification Modal -->
+<div class="modal fade" id="postNotificationModal" tabindex="-1" aria-labelledby="postNotificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="postNotificationModalLabel">Post New Notification</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="post-notification.php" method="post">
+                    <div class="mb-3">
+                        <label for="notificationTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="notificationTitle" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notificationContent" class="form-label">Content</label>
+                        <textarea class="form-control" id="notificationContent" name="content" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post Notification</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        function postNotification() {
+            const title = document.getElementById("notificationTitle").value;
+            const content = document.getElementById("notificationContent").value;
+
+            if (title && content) {
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "notification_handler.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        alert(response.message);
+                        if (response.success) {
+                            location.reload();
+                        }
+                    }
+                };
+                xhr.send(`action=post&title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}`);
+            } else {
+                alert("Both title and content are required.");
+            }
+        }
+
+        function deleteNotification(notificationId) {
+            if (confirm("Are you sure you want to delete this notification?")) {
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "notification_handler.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        alert(response.message);
+                        if (response.success) {
+                            location.reload();
+                        }
+                    }
+                };
+                xhr.send(`action=delete&id=${notificationId}`);
+            }
+        }
+    </script>
+</div>
+
+        
             </main>
         </div>
     </div>
@@ -413,6 +546,6 @@ $conn->close();
         });
     </script>
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> -->
 </body>
 </html>

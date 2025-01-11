@@ -185,7 +185,7 @@ if (!isset($_SESSION["name"])) {
                     ?>
                             <div class="card-body">
                                 <h5 class="card-title">Pending Approvals</h5>
-                                <p class="card-text display-4"><?php if ($requestCount3 > 0 ||$num > 0): ?>
+                                <p class="card-text display-4" style="align-items:center"><?php if ($requestCount3 > 0 ||$num > 0): ?>
                             <?php
                                  echo $requestCount3; 
                                  ?>
@@ -336,7 +336,7 @@ while ($stmt->fetch()) {
                 
                 <div class="filter-section">
     <!-- <h5>Filter Enrollments</h5> -->
-    <!—Notification List Section -->
+    <!--Notification List Section -->
 <section id="notification-list">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
         <h2>Posted Notifications</h2>
@@ -359,17 +359,31 @@ while ($stmt->fetch()) {
             </thead>
             <tbody>
                 <?php
-                $result = $con->query("SELECT * FROM notifications");
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>" . htmlspecialchars($row['id']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['title']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['content']) . "</td>";
-                    echo "<td>
-                            <button class='btn btn-danger btn-sm' onclick='deleteNotification(" . $row['id'] . ")'>Delete</button>
-                          </td>";
-                    echo "</tr>";
+             require_once("includes/config.php");
+             
+                    
+                    if($con){
+                        $stmt = $con->prepare("SELECT *FROM notifications");
+                        
+                        if ($stmt->execute()) {
+                         // Bind the result to a variable
+                         $stmt->bind_result($Id,$Title,$Notification);
+                       
+                while ($stmt->fetch()) {
+                    echo "
+                    <tr>
+                    <td>$Id</td>
+                    <td>$Title</td>
+                    <td>$Notification</td>
+                    <td>
+                         <button class='btn btn-danger btn-sm'
+                    
+                           >Delete</button>
+                        </td>
+                     </tr>
+                     ";
                 }
+            }}
                 ?>
                 </tbody>
             </table>
@@ -386,14 +400,14 @@ while ($stmt->fetch()) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="post-notification.php" method="post">
+                <form action="notification.php" method="post">
                     <div class="mb-3">
                         <label for="notificationTitle" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="notificationTitle" name="title" required>
+                        <input type="text" class="form-control" id="title" name="title" required>
                     </div>
                     <div class="mb-3">
                         <label for="notificationContent" class="form-label">Content</label>
-                        <textarea class="form-control" id="notificationContent" name="content" rows="4" required></textarea>
+                        <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Post Notification</button>
                 </form>

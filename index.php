@@ -80,17 +80,7 @@
 <body>
 <?php include 'user_nav.php' ?>
 <!-- Sidebar -->
- <!-- <div class="sidebar">
- <h2>Dashboard</h2>
-        <a href="javascript:void(0)" onclick="showSection(‘section1’)">Home</a>
-        <a href="javascript:void(0)" onclick="showSection(‘section2’)">Profile</a>
-        <a href="javascript:void(0)" onclick="showSection(‘section3’)">Settings</a>
-        <a href="javascript:void(0)" onclick="showSection(‘section4’)">Enroll</a>
-<a href="login.php" target="_self" class="logout">Logout</a>
-
-
-
-</div> -->
+ 
 
 <!-- Main Content  -->
     <div class=”content”>

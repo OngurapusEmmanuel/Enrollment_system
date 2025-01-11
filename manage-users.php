@@ -195,10 +195,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $email = htmlspecialchars($_POST["userEmail"]);
         $password = htmlspecialchars($_POST["password"]);
         $hashedpwd = password_hash($password, PASSWORD_BCRYPT);
+        $first_login=1;
 
         if ($con) {
-            $stmt = $con->prepare("INSERT INTO users(`Firstname`, `Lastname`, `Email`, `Phone Number`, `Role`, `Status`, `Password`) VALUES(?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param('sssssss', $firstname, $lastname, $email, $phone, $role, $status, $hashedpwd);
+            $stmt = $con->prepare("INSERT INTO users(`Firstname`, `Lastname`, `Email`, `Phone Number`, `Role`, `Status`, `Password`,`First_login`) VALUES(?,?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param('sssssssi', $firstname, $lastname, $email, $phone, $role, $status, $hashedpwd,$first_login);
             $stmt->execute();
             if ($stmt->affected_rows > 0) {
                 echo "<script>alert('User created successfully!');</script>";
@@ -216,10 +217,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $role = htmlspecialchars($_POST["userRole"]);
         $status = htmlspecialchars($_POST["userStatus"]);
         $email = htmlspecialchars($_POST["userEmail"]);
+        $first_login=0;
 
         if ($con) {
-            $stmt = $con->prepare("UPDATE users SET Firstname = ?, Lastname = ?, Email = ?, `Phone Number` = ?, Role = ?, Status = ? WHERE Id = ?");
-            $stmt->bind_param('ssssssi', $firstname, $lastname, $email, $phone, $role, $status, $id);
+            $stmt = $con->prepare("UPDATE users SET Firstname = ?, Lastname = ?, Email = ?, `Phone Number` = ?, Role = ?, Status = ?,First_login=? WHERE Id = ?");
+            $stmt->bind_param('ssssssii', $firstname, $lastname, $email, $phone, $role, $status,$first_login, $id);
             $stmt->execute();
             if ($stmt->affected_rows > 0) {
                 echo "<script>alert('User updated successfully!');</script>";

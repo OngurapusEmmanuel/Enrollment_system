@@ -8,68 +8,70 @@
     <title>Client-Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="css/login.css">
     <link rel="icon" href="images/statue.jpg" type="image/x-icon">
 </head>
 
 <body>
+<?php
+include_once('includes/sessions.php');
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $email = $_POST["email"];
+    $password = $_POST["password"];
+    require_once "includes/config.php";
 
-    <?php
-if ($_SERVER["REQUEST_METHOD"]==="POST") {
-	$email = ($_POST["email"]);
-	$password = ($_POST["password"]);
-	require_once "includes/config.php";
-	$con;
-	if ($con) {
-		$stmt = $con->prepare("SELECT Firstname, `Password`,`Role` FROM users WHERE Email = ?");
-		$stmt->bind_param('s', $email);
-		$stmt->execute();
-		$stmt->store_result();
-		$stmt->bind_result($Firstname, $Password,$Role);
-		while ($stmt->fetch()) {
-			$pw = $Password;
-			$name = $Firstname;
-            $role=$Role;
+    if ($con) {
+        $stmt = $con->prepare("SELECT Firstname, `Password`, `Role`, `First_login` FROM users WHERE Email = ?");
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows === 0) {
+            $_SESSION['error'] = "Email not found!";
+            header("Location: login.php");
+            exit();
+        }
 
-            $numRows = $stmt->num_rows;
-		if ($numRows === 0) {
-			$error="email not found";
-		} else {
-			// if (!password_verify($Password, $pw)) {
-            if($password!=$pw){
-				echo "<script>
-                alert('invalid password! Try again');
-                </script>";
-                header("Location:login.php");
-			} else {
-                if ($role='admin'|| 'moderator'||'Admin') {
-                    require_once "includes/sessions.php";
-				$_SESSION["name"] = $name;
-                $_SESSION["role"]=$role;
-				header("Location: admin-dashboard.php");
+        $stmt->bind_result($Firstname, $Password, $Role, $First_login);
+        $stmt->fetch();
 
-                }else if ($role='user') {
-                    require_once "includes/sessions.php";
-                    $_SESSION["name"] = $name;
-                    $_SESSION["role"]=$role;
-                    header("Location: user-dashboard.php");
+        if (!password_verify($password, $Password)) {
+            $_SESSION['error'] = "Invalid password!";
+            header("Location: login.php");
+            exit();
+        }
 
-                } else{
-                    header("Location: login.php");
-                }
-				
-			}
-		}
-           
-		}
-		
-	} else {
-		echo "server prob";
-	}
-    $con->close();
+        if ($Role === "admin" || $Role === "moderator") {
+            $_SESSION["name"] = $Firstname;
+            $_SESSION["role"] = $Role;
+            header("Location: admin-dashboard.php");
+            exit();
+        } elseif ($Role === "user") {
+            $_SESSION["name"] = $Firstname;
+            $_SESSION["role"] = $Role;
+            $_SESSION["first_login"] = $First_login;
+            $_SESSION["email"]=$email;
+            
+            // Check if it's the first login
+            if ($First_login == 1) {
+                header("Location: update_password.php");  // Redirect to password update page
+                exit();
+            } else {
+                header("Location: user-dashboard.php");  // Regular user dashboard
+                exit();
+            }
+        } else {
+            $_SESSION['error'] = "Invalid role!";
+            header("Location: login.php");
+            exit();
+        }
+    } else {
+        die("Database connection failed: " . mysqli_connect_error());
+    }
 }
 ?>
+
+
 
     <!-- client login form -->
     <div class="container">

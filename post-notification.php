@@ -39,19 +39,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     } elseif ($action === "post") {
         // Handle post notification
-        $title = trim($_POST['title'] ?? '');
-        $content = trim($_POST['content'] ?? '');
+        $title = $_POST['title'];
+        $content = $_POST['content'];
 
         if (!empty($title) && !empty($content)) {
             if ($con) {
-                $stmt = $con->prepare("INSERT INTO notifications (title, content) VALUES (?, ?)");
+                $stmt = $con->prepare("INSERT INTO notifications `Title`, `Notification`) VALUES (?, ?)");
                 $stmt->bind_param("ss", $title, $content);
 
                 if ($stmt->execute()) {
-                    echo json_encode([
-                        "success" => true,
-                        "message" => "Notification posted successfully!"
-                    ]);
+                    echo "<script>
+                    alert('Notification posted successfully'));
+                    </script>";
+                    // echo json_encode([
+                    //     "success" => true,
+                    //     "message" => "Notification posted successfully!"
+                    // ]);
                 } else {
                     echo json_encode([
                         "success" => false,

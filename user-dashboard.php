@@ -1,13 +1,64 @@
 
 <?php
- require_once("includes/sessions.php");
+// Include necessary files
+include('includes/config.php');
+include('includes/sessions.php');
+
+// Check if user is logged in
+if (!isset($_SESSION['name'])) {
+    // Redirect to login page if not logged in
+    header("Location: login.php");
+    exit();
+}
+
+// Get user data securely using prepared statements
+$username = $_SESSION['name'];
+$sql = "SELECT * FROM users WHERE `Firstname` = ?";
+$stmt = $con->prepare($sql);
+
+if ($stmt) {
+    // Bind parameters and execute the statement
+    $stmt->bind_param('s', $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        // Fetch user data
+        $user = $result->fetch_assoc();
+        
+        // Check if it's the first login
+        $isFirstLogin = $user['First_login'] == 1;
+    } else {
+        // If user not found, handle the error
+        echo "User not found.";
+        exit();
+    }
+
+    $stmt->close();
+} else {
+    // If the statement preparation fails
+    echo "Failed to prepare the SQL statement.";
+    exit();
+}
+?>
+
+<?php
+// require_once("includes/sessions.php");
 
 // if (!isset($_SESSION["name"])) {
-
-//   header("Location:login.php");
-//  exit();
+//     header("Location: login.php");
+//     exit();
 // }
- ?>
+
+// Include the database connection configuration
+include('includes/config.php');
+
+// Fetch notifications from the database (initially, when the page loads)
+$sql = "SELECT *FROM notifications";
+$stmt = $con->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
+?>
  <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,6 +66,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Management Dashboard</title>
     <!-- Bootstrap CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -38,6 +91,42 @@
     </style>
 </head>
 <body>
+<script>
+    // Show the modal if it's the first login
+    document.addEventListener('DOMContentLoaded', function () {
+        <?php if ($isFirstLogin): ?>
+        var myModal = new bootstrap.Modal(document.getElementById('updatePasswordModal'));
+        myModal.show();
+        <?php endif; ?>
+    });
+</script>
+
+<!-- Modal -->
+<div class="modal fade" id="updatePasswordModal" tabindex="-1" aria-labelledby="updatePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updatePasswordModalLabel">Update Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updatePasswordForm" method="post" action="update-password.php">
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
@@ -214,18 +303,6 @@
                                         <button class="btn btn-sm btn-primary">View</button>
                                     </td>
                                 </tr>
-                                <!-- <tr>
-                                    <td>2</td>
-                                    <td>Jane Smith</td>
-                                    <td>Graphic Design Workshop</td>
-                                    <td><span class="badge bg-warning">Pending</span></td>
-                                    <td>2024-02-10</td>
-                                    <td>2024-03-01</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-primary view-btn" data-id="2">View</button>
-                                    </td>
-                                </tr> -->
-                                <!-- Add more rows as needed -->
                             </tbody>
                         </table>
                     </div>
@@ -235,24 +312,91 @@
     </div>
                 </div>
 
-                <!-- Notifications Section -->
-                <div class="card">
-                    <div class="card-header">
-                        Notifications
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">A new client "Michael Johnson" has been successfully enrolled in "Data Analysis Basics".</li>
-                            <li class="list-group-item">Your request to enroll "Jane Smith" in the "Web Development Training" has been approved.</li>
-                            <li class="list-group-item">Reminder: Pending enrollments need to be confirmed before the start date.</li>
-                        </ul>
-                    </div>
-                </div>
+                <!-- <h5>Filter Enrollments</h5> -->
+    <!—Notification List Section -->
+<section id="notification-list">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <h2>Posted Notifications</h2>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            Reports
+        </div>
+        <div class="card-body">
+        <table class="table table-striped" id="notificationTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Content</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+             require_once("includes/config.php");
+             
+                    
+                    if($con){
+                        $stmt = $con->prepare("SELECT *FROM notifications");
+                        
+                        if ($stmt->execute()) {
+                         // Bind the result to a variable
+                         $stmt->bind_result($Id,$Title,$Notification);
+                       
+                while ($stmt->fetch()) {
+                    echo "
+                    <tr>
+                    <td>$Id</td>
+                    <td>$Title</td>
+                    <td>$Notification</td>
+                     </tr>
+                     ";
+                }
+            }}
+                ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
             </main>
         </div>
     </div>
+  
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+   
+    <script>
+        // Function to fetch notifications using AJAX
+        function fetchNotifications() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "fetch_notifications.php", true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    const notifications = JSON.parse(xhr.responseText);
+                    const notificationList = document.getElementById("notification-list");
+                    notificationList.innerHTML = ""; // Clear the existing notifications
+
+                    // Add new notifications to the list
+                    notifications.forEach(notification => {
+                        const listItem = document.createElement("li");
+                        listItem.classList.add("list-group-item");
+                        listItem.innerHTML = `${notification.message}`;
+                        notificationList.appendChild(listItem);
+                    });
+                }
+            };
+            xhr.send();
+        }
+
+        // Fetch notifications every 30 seconds
+        setInterval(fetchNotifications, 30000);
+
+        // Initial fetch when the page loads
+        fetchNotifications();
+    </script>
 </body>
 </html>

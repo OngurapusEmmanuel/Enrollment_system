@@ -1,14 +1,15 @@
 <?php
-require_once "includes/sessions.php";
-if (isset($_SESSION["name"])) {
+// require_once "includes/sessions.php";
+// if (isset($_SESSION["name"])) {
 
-    header("Location:index.php");
+//     header("Location:index.php");
    
-  }
-  else {
-      header("Location:login.php");
-  }
+//   }
+//   else {
+//       header("Location:login.php");
+//   }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,7 +32,7 @@ if (isset($_SESSION["name"])) {
 <body>
     <div class="container mt-5">
         <h1 class="text-center mb-4">Enroll Client</h1>
-        <form id="enrollForm" action="" method="post">
+        <form id="enrollForm" method="POST" action="submit_enrollment.php">
             <!-- Step 1: Personal Information -->
             <div class="step active" id="step1">
                 <h3>Step 1: Personal Information</h3>
@@ -48,7 +49,7 @@ if (isset($_SESSION["name"])) {
 
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email:</label>
-                        <input type="text" id="email" name="email" class="form-control" required>
+                        <input type="email" id="email" name="email" class="form-control" required>
                     </div>
                     <div class="col-md-6">
                         <label for="phone" class="form-label">Phone Number:</label>
@@ -80,8 +81,6 @@ if (isset($_SESSION["name"])) {
                         <label for="parent_occupation" class="form-label">Occupation of Parent:</label>
                         <input type="text" id="parent_occupation" name="parent_occupation" class="form-control" required>
                     </div>
-
-                   
                 </div>
                 <div class="text-center mt-3">
                     <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next</button>
@@ -92,33 +91,31 @@ if (isset($_SESSION["name"])) {
             <div class="step" id="step2">
                 <h3>Step 2: Disability Information</h3>
                 <div class="row g-3">
-                    <div class="col-12">
-                        <div class="col-md-6">
-                            <label for="education" class="form-label">Educational Qualification:</label>
-                            <input type="text" id="education" name="education" class="form-control" required>
-                        </div>
+                    <div class="col-md-6">
+                        <label for="education" class="form-label">Educational Qualification:</label>
+                        <input type="text" id="education" name="education" class="form-control" required>
+                    </div>
     
-                        <div class="col-md-6">
-                            <label for="category" class="form-label">Category (SC/ST/Other):</label>
-                            <input type="text" id="category" name="category" class="form-control" required>
-                        </div>
-                        <label class="form-label">Types of Disabilities:</label><br>
-                        <div class="form-check form-check-inline">
-                            <input type="checkbox" name="disabilities[0]" value="CP" class="form-check-input" id="cp">
-                            <label for="cp" class="form-check-label">C.P</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input type="checkbox" name="disabilities[1]" value="Autism" class="form-check-input" id="autism">
-                            <label for="autism" class="form-check-label">Autism</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input type="checkbox" name="disabilities[2]" value="MR" class="form-check-input" id="mr">
-                            <label for="mr" class="form-check-label">MR</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input type="checkbox" name="disabilities[3]" value="MD" class="form-check-input" id="md">
-                            <label for="md" class="form-check-label">MD</label>
-                        </div>
+                    <div class="col-md-6">
+                        <label for="category" class="form-label">Category (SC/ST/Other):</label>
+                        <input type="text" id="category" name="category" class="form-control" required>
+                    </div>
+                    <label class="form-label">Types of Disabilities:</label><br>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" name="disabilities[0]" value="CP" class="form-check-input" id="cp">
+                        <label for="cp" class="form-check-label">C.P</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" name="disabilities[1]" value="Autism" class="form-check-input" id="autism">
+                        <label for="autism" class="form-check-label">Autism</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" name="disabilities[2]" value="MR" class="form-check-input" id="mr">
+                        <label for="mr" class="form-check-label">MR</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" name="disabilities[3]" value="MD" class="form-check-input" id="md">
+                        <label for="md" class="form-check-label">MD</label>
                     </div>
 
                     <div class="col-md-6">
@@ -132,8 +129,6 @@ if (isset($_SESSION["name"])) {
                             <label for="disability_no" class="form-check-label">No</label>
                         </div>
                     </div>
-
-                    
                 </div>
                 <div class="text-center mt-3">
                     <button type="button" class="btn btn-secondary" onclick="previousStep(1)">Previous</button>
@@ -153,7 +148,6 @@ if (isset($_SESSION["name"])) {
                         </select>
                     </div>
 
-                    
                     <div class="col-md-6">
                         <label class="form-label">Support from Govt/NGO:</label><br>
                         <div class="form-check">
@@ -239,63 +233,10 @@ if (isset($_SESSION["name"])) {
             }
         }
     </script>
-<?php
-require_once("includes/config.php");
-//start trnsaction
-$con->begin_transction();
-
-// Get form data
-
-$firstname = $_POST['firstname'];
-$lastname = $_POST['lastname'];
-$email = $_POST['email'];
-$phone = $_POST['phone'];
-$parent_name = $_POST['parent_name'];
-$age = $_POST['age'];
-$gender = $_POST['gender'];
-$education = $_POST['education'];
-$category = $_POST['category'];
-$disabilities = implode(", ", $_POST['disabilities[]']);
-$disability_certificate = $_POST['disability_certificate'];
-$support = implode(", ", $_POST['support[]']);
-$bpl = $_POST['bpl'];
-$parent_occupation = $_POST['parent_occupation'];
-$guardian_name = $_POST['guardian_name'];
-$guardian_relation = $_POST['guardian_relation'];
-$health_insurance = $_POST['health_insurance'];
-$other_info = $_POST['other_info'];
-
-try {
-   // Insert data into database
-$stmt = $con->prepare("INSERT INTO clients ( First_name,Last_name,Email,phone_no,Parent_name,Age,Gender,Education,Category,Disabilities,Disability_certificate,Support,Bpl,Parent_occupation,Guardian_name ,Guardian_relation,Health_insurance,Other_info )
-VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )");
-
-// Bind the parameters
-$stmt->bind_param("ssssssssssssssssss",'$firstname','$lastname','$email','$phone','$parent_name', '$age', '$gender', '$education', '$category', '$disabilities', '$disability_certificate', '$support', '$bpl', '$parent_occupation', '$guardian_name', '$guardian_relation', '$health_insurance', '$other_info');
-
-$stmt->execute();
-if ($stmt->affected_rows === -1) {
-    echo "Error";
-} else {
- echo "<script>
-    alert('new record updated successfully!');
-    
-</script>";
-header("Location:user-dashboard.php");
-$con->commit();
-
-}
-} catch (Throwable $th) {
-    $con->rollback();
-    echo "<script>
-    alert('Error '.$th->getMessage());
-    </script>";
-
-}
-
-$con->close();
-?>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+
+
+
+   

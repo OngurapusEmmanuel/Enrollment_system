@@ -13,7 +13,8 @@ if ($con) {
     $stmt->bind_param("ss", $title, $content);
     $stmt->execute();
     if ($stmt->affected_rows > 0) {
-        echo "<script>alert('User updated successfully!');</script>";
+        echo "<script>alert('Notification updated successfully!');</script>";
+        // header('Location:admin-dashboard.php');
     } else {
         echo "<script>alert('Error updating user.');</script>";
     }

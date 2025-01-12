@@ -83,7 +83,7 @@ if (!isset($_SESSION["name"])) {
                     <span class="download-icon">⬇</span>
                     <div class="dropdown">
                       <a href="generate-client-pdf.php" download="enrolled_clients.pdf">Download PDF</a>
-                      <a href="files/sample.xlsx" download="sample.xlsx">Download Excel</a>
+                      <a href="export-enrollment.php" download="Enrollment-data.xlsx">Download Excel</a>
                     </div>
                   </div>
                 
@@ -222,7 +222,15 @@ while ($stmt->fetch()) {
             <td>{$parent}</td>
             <td>{$disability}</td>
             <td>
-            <button class='btn btn-sm btn-primary view-btn' data-bs-toggle='modal' data-bs-target='#viewclientModal' data-id='{$Id}'>View</button>
+<button class='btn btn-sm btn-warning view-btn' data-bs-toggle='modal' data-bs-target='#viewClientModal' data-id='{$Id}'
+ data-firstname='{$firstname}'
+  data-lastname='{$lastname}'
+ data-phone='{$phone}' 
+ data-age='{$age}' 
+ data-parent='{$parent}' 
+ data-disability='{$disability}'>View</button>
+
+   
             </td>
         </tr>
     ";
@@ -240,76 +248,199 @@ while ($stmt->fetch()) {
         </div>
     </div>
 
-        <!-- Modal for Viewing Details -->
-        <div class="modal fade" id="viewClientModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewModalLabel">Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>First Name:</strong> <span id="modalFirstName"></span></p>
-                    <p><strong>Last Name:</strong> <span id="modalLastName"></span></p>
-                    <p><strong>Email:</strong> <span id="modalEmail"></span></p>
-                    <p><strong>Phone Number:</strong> <span id="modalPhone"></span></p>
-                    <p><strong>Age:</strong> <span id="modalAge"></span></p>
-                    <p><strong>Gender:</strong> <span id="modalGender"></span></p>
-
-                    <p><strong>Parent Name:</strong> <span id="modalParentName"></span></p>
-                    <p><strong>Parent Occupation:</strong> <span id="modalParent_occup"></span></p>
-                    <p><strong>Highest Education Qualification:</strong> <span id="modalEducation"></span></p>
-                    <p><strong>Category:</strong> <span id="modalCategory"></span></p>
-                    <p><strong>Disabilities Type:</strong> <span id="modalDisabilities"></span></p>
-                    <p><strong>Received Disability Certificate:</strong> <span id="modalDisability_cert"></span></p>
-
-                    <p><strong>Government Support:</strong> <span id="modalSupport"></span></p>
-                    <p><strong>Bpl:</strong> <span id="modalBpl"></span></p>
-                    <p><strong>Guardian Name:</strong> <span id="modalGuardian_name"></span></p>
-                    <p><strong>Guardian Relationship:</strong> <span id="modalGuardial_rel"></span></p>
-                    <p><strong>Has Health Insurance:</strong> <span id="modalHealth_insu"></span></p>
-
-                    <!-- Add more fields as needed -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+  <!-- Modal for Viewing Details -->
+<div class="modal fade" id="viewClientModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewModalLabel">Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>First Name:</strong> <span id="modalFirstName"></span></p>
+                <p><strong>Last Name:</strong> <span id="modalLastName"></span></p>
+                <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                <p><strong>Phone Number:</strong> <span id="modalPhone"></span></p>
+                <p><strong>Age:</strong> <span id="modalAge"></span></p>
+                <p><strong>Gender:</strong> <span id="modalGender"></span></p>
+                <p><strong>Parent Name:</strong> <span id="modalParentName"></span></p>
+                <p><strong>Parent Occupation:</strong> <span id="modalParent_occup"></span></p>
+                <p><strong>Highest Education Qualification:</strong> <span id="modalEducation"></span></p>
+                <p><strong>Category:</strong> <span id="modalCategory"></span></p>
+                <p><strong>Disabilities Type:</strong> <span id="modalDisabilities"></span></p>
+                <p><strong>Received Disability Certificate:</strong> <span id="modalDisability_cert"></span></p>
+                <p><strong>Government Support:</strong> <span id="modalSupport"></span></p>
+                <p><strong>BPL:</strong> <span id="modalBpl"></span></p>
+                <p><strong>Guardian Name:</strong> <span id="modalGuardian_name"></span></p>
+                <p><strong>Guardian Relationship:</strong> <span id="modalGuardian_rel"></span></p>
+                <p><strong>Has Health Insurance:</strong> <span id="modalHealth_insu"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const viewButtons = document.querySelectorAll(".view-btn");
+<!-- <script>
 
-            viewButtons.forEach((button,index) => {
-                button.addEventListener("click", function() {
-                    const id = this.getAttribute("data-id");
+document.addEventListener("DOMContentLoaded", function () {
+        const viewButtons = document.querySelectorAll(".view-btn");
 
-                    <?php
-// Database connection
-require_once("includes/config.php");
+        viewButtons.forEach((button) => {
+            button.addEventListener("click", function () {
+                const clientId = this.getAttribute("data-id");
 
-$id = $_GET['id'];
-$stmt = $conn->prepare("SELECT *FROM clients WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$data = $result->fetch_assoc();
+ // Populate the edit modal with the user data
+ var editUserModal = document.getElementById('viewClientModal');
+                editUserModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var userId = button.getAttribute('data-id');
+            var firstName = button.getAttribute('data-firstname');
+            var lastName = button.getAttribute('data-lastname');
+            var disability = button.getAttribute('data-disability');
+            var phone = button.getAttribute('data-phone');
+            var age = button.getAttribute('data-age');
+            var parent = button.getAttribute('data-prent');
 
-echo json_encode($data);
+            <?php
+// require_once('includes/config.php');
 
-$stmt->close();
-$conn->close();
+// if ($con) {
+//     $stmt = $con->prepare("SELECT `Email`,
+//     `Gender`,`Education`,`Category`,
+//     `Disability_certificate`,`Support`,
+//     `Bpl`,`Parent_occupation`,`Guardian_name`,
+//     `Guardian_relation`,`Health_insurance` FROM clients WHERE id = ?");
+//     $stmt->bind_param("i", userId);
+//     $stmt->execute();
+//     $stmt->bind_result($email,$gender,$education,$category,$disability_cert,$support,$bpl,$parenr_occu,$guardian_name,$guardil_relation,$health_insu);
+
+//     $stmt->fetch();
+
+// }
+
+            ?>
+            document.getElementById("modalFirstName").value =firstname;
+                        document.getElementById("modalLastName").value =lastname ;
+                        document.getElementById("modalEmail").value =$email;
+                        document.getElementById("modalPhone").value =phone;
+                        document.getElementById("modalAge").value =age;
+                        document.getElementById("modalGender").value =$gender;
+                        document.getElementById("modalParentName").value =parent;
+                        document.getElementById("modalParent_occup").value =$parenr_occu;
+                        document.getElementById("modalEducation").value =$education;
+                        document.getElementById("modalCategory").value =$category;
+                        document.getElementById("modalDisabilities").value =disability;
+                        document.getElementById("modalDisability_cert").value =$disability_cert;
+                        document.getElementById("modalSupport").value =$support;
+                        document.getElementById("modalBpl").value =$bpl;
+                        document.getElementById("modalGuardian_name").value =$guardian_name;
+                        document.getElementById("modalGuardian_rel").value =$guardil_relation;
+                        document.getElementById("modalHealth_insu").value =$health_insu;
+
+        // Show the modal
+        const viewModal = new bootstrap.Modal(document.getElementById("viewClientModal"));
+                        viewModal.show();
+                    
+                    .catch((error) => console.error("Error fetching data:", error));
+
+            });
+        });
+    });
+
+    </script> -->
+<!-- //         // Populate the edit modal with the user data
+//         var editUserModal = document.getElementById('viewClientModal');
+//         editUserModal.addEventListener('show.bs.modal', function (event) {
+//             var button = event.relatedTarget;
+//             var userId = button.getAttribute('data-id');
+//             var firstName = button.getAttribute('data-firstname');
+//             var lastName = button.getAttribute('data-lastname');
+//             var disability = button.getAttribute('data-disability');
+//             var phone = button.getAttribute('data-phone');
+//             var age = button.getAttribute('data-age');
+//             var parent = button.getAttribute('data-prent');
+
+//             <?php
+// require_once('includes/config.php');
+
+// if ($con) {
+//     $stmt = $con->prepare("SELECT `Email`,
+//     `Gender`,`Education`,`Category`,
+//     `Disability_certificate`,`Support`,
+//     `Bpl`,`Parent_occupation`,`Guardian_name`,
+//     `Guardian_relation`,`Health_insurance` FROM clients WHERE id = ?");
+//     $stmt->bind_param("i", userId);
+//     $stmt->execute();
+//     $stmt->bind_result($email,$gender,$education,$category,$disability_cert,$support,$bpl,$parenr_occu,$guardian_name,$guardil_relation,$health_insu);
+
+//     $stmt->fetch();
+
+// }
+
+//             ?>
+//             document.getElementById("modalFirstName").value =firstname;
+//                         document.getElementById("modalLastName").value =lastname ;
+//                         document.getElementById("modalEmail").value =$email;
+//                         document.getElementById("modalPhone").value =phone;
+//                         document.getElementById("modalAge").value =age;
+//                         document.getElementById("modalGender").value =$gender;
+//                         document.getElementById("modalParentName").value =parent;
+//                         document.getElementById("modalParent_occup").value =$parenr_occu;
+//                         document.getElementById("modalEducation").value =$education;
+//                         document.getElementById("modalCategory").value =$category;
+//                         document.getElementById("modalDisabilities").value =disability;
+//                         document.getElementById("modalDisability_cert").value =$disability_cert;
+//                         document.getElementById("modalSupport").value =$support;
+//                         document.getElementById("modalBpl").value =$bpl;
+//                         document.getElementById("modalGuardian_name").value =$guardian_name;
+//                         document.getElementById("modalGuardian_rel").value =$guardil_relation;
+//                         document.getElementById("modalHealth_insu").value =$health_insu;
+
+//         // Show the modal
+//         const viewModal = new bootstrap.Modal(document.getElementById("viewClientModal"));
+//                         viewModal.show();
+                    
+//                     .catch((error) => console.error("Error fetching data:", error));
+//         });
+//     </script> -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const viewButtons = document.querySelectorAll(".view-btn");
+
+        viewButtons.forEach((button) => {
+            button.addEventListener("click", function () {
+                const clientId = this.getAttribute("data-id");
+                console.log("Client ID:", clientId); // Debugging: Check if the ID is correct
+
+                <?php
+// // Database connection
+// require_once("includes/config.php");
+
+// $id = $_GET['id'];
+// $stmt = $con->prepare("SELECT *FROM clients WHERE Id = ?");
+// $stmt->bind_param("i", $id);
+// $stmt->execute();
+// $result = $stmt->get_result();
+// $data = $result->fetch_assoc();
+
+// echo json_encode($data);
+
+// $stmt->close();
+// $con->close();
 ?>
+                // Fetch data from the server
+                fetch(`get-details.php?id='clientId'`)
+                    .then((response) => response.json())
+                    .then((data) => {
 
-                    // Fetch data from the server
-                    fetch(`id=${id}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            // Populate modal fields
-                            document.getElementById("modalFirstName").textContent = data.First_name;
-                            document.getElementById("modalLatName").textContent = data.Last_name;
+                        // console.log("Response data:", data); // Debugging: Check the server response
+
+                        // Populate modal fields
+                        document.getElementById("modalFirstName").textContent = data.First_name;
+                        document.getElementById("modalLatName").textContent = data.Last_name;
                             document.getElementById("modalEmail").textContent = data.Email;
                             document.getElementById("modalPhone").textContent = data.Phone_no;
                             document.getElementById("modalParentName").textContent = data.Parent_name;
@@ -326,15 +457,17 @@ $conn->close();
                             document.getElementById("modalGurdian_rel").textContent = data.Guardian_relation;
                             document.getElementById("modalHealth_insu").textContent = data.Health_insurance;
 
-                            // Show the modal
-                            const viewModal = new bootstrap.Modal(document.getElementById("viewClientModal"));
-                            viewModal.show();
-                        })
-                        .catch(error => console.error("Error fetching data:", error));
+                        // Show the modal
+                        const viewModal = new bootstrap.Modal(document.getElementById("viewClientModal"));
+                        viewModal.show();
+                    })
+                    .catch((error) => console.error("Error fetching data:", error));
+            
                 });
-            });
         });
-    </script>
+    });
+</script>
+
    
 
     <!-- Bootstrap JS -->

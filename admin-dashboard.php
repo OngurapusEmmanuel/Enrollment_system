@@ -257,7 +257,7 @@ $disabilityFilter = isset($_GET['disability']) ? $_GET['disability'] : '';
 $ageFilter = isset($_GET['age']) ? $_GET['age'] : '';
 
 // Build the query dynamically based on the filters
-$query = "SELECT Id, First_name, Last_name, Phone_no, Age, Parent_name, Disabilities FROM approved_clients WHERE 1";
+$query = "SELECT Id, First_name, Last_name, Phone_no, Age, Parent_name, Disabilities FROM clients WHERE 1";
 
 // Apply disability filter if selected
 if ($disabilityFilter !== '') {
@@ -376,9 +376,7 @@ while ($stmt->fetch()) {
                     <td>$Title</td>
                     <td>$Notification</td>
                     <td>
-                         <button class='btn btn-danger btn-sm'
-                    
-                           >Delete</button>
+                         <button class='btn btn-danger btn-sm' onclick='deleteNotification({$Id})' >Delete</button>
                         </td>
                      </tr>
                      ";
@@ -390,6 +388,7 @@ while ($stmt->fetch()) {
         </div>
     </div>
 </section>
+
 
 <!-- Post Notification Modal -->
 <div class="modal fade" id="postNotificationModal" tabindex="-1" aria-labelledby="postNotificationModalLabel" aria-hidden="true">
@@ -442,7 +441,7 @@ while ($stmt->fetch()) {
         function deleteNotification(notificationId) {
             if (confirm("Are you sure you want to delete this notification?")) {
                 const xhr = new XMLHttpRequest();
-                xhr.open("POST", "notification_handler.php", true);
+                xhr.open("POST", "post-notification.php", true);
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === 4 && xhr.status === 200) {
@@ -515,7 +514,7 @@ while ($stmt->fetch()) {
 require_once("includes/config.php");
 
 $id = $_GET['id'];
-$stmt = $conn->prepare("SELECT *FROM your_table WHERE id = ?");
+$stmt = $conn->prepare("SELECT *FROM approved_clients WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();

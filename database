@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 `First_login` INT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- INSERT INTO `users` (`Id`, `Firstname`, `Lastname`, `Email`, `Phone Number`, `Role`, `Status`, `Password`) VALUES (NULL, 'Emmanuel', 'Ongurapus', 'emmanuelongurapus@gmail.com', '0797814431', 'admin', 'Active', 'Emmerhnuel@4');
+INSERT INTO `users` (`Id`, `Firstname`, `Lastname`, `Email`, `Phone Number`, `Role`, `Status`, `Password`) VALUES (NULL, 'Admin1', 'Admin1', 'info@bethelmentalwellbeing.org', '0797814431', 'admin', 'Active', 'Admin123');
 
 CREATE TABLE IF NOT EXISTS `clients` (
   `Id` int AUTO_INCREMENT PRIMARY KEY,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `approved_clients` (
   `phone_no` int(10) DEFAULT NULL,
   `Parent_name` VARCHAR(100),
   `Age` INT (3) NOT NULL,
-  `Sex` TEXT(6) NOT NULL,
+  `Gender` TEXT(6) NOT NULL,
   `Education`TEXT(20) NOT NULL,
   `Category` TEXT(3) NOT NULL,
   `Disabilities` TEXT(20) NOT NULL,

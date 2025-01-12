@@ -115,18 +115,48 @@ $result = $stmt->get_result(); // Get the result set
                                     <td><?php echo htmlspecialchars($row['education']); ?></td>
                                     <td><?php echo htmlspecialchars($row['position']); ?></td>
                                     <td><?php echo nl2br(htmlspecialchars($row['cover_letter'])); ?></td>
-                                    <td>
-                                        <a href="download_resume.php?code=<?php echo htmlspecialchars($row['resume_code']); ?>" class="btn btn-success" target="_blank">Download Resume</a>
-                                    </td>
-                                    <td class="actions">
-                                        <button class="btn btn-info" onclick="openModal('<?php echo htmlspecialchars($row['name']); ?>', 
-                                                            '<?php echo htmlspecialchars($row['email']); ?>', 
-                                                            '<?php echo htmlspecialchars($row['phone']); ?>', 
-                                                            '<?php echo htmlspecialchars($row['education']); ?>', 
-                                                            '<?php echo htmlspecialchars($row['position']); ?>', 
-                                                            '<?php echo nl2br(htmlspecialchars($row['cover_letter'])); ?>', 
-                                                            '<?php echo htmlspecialchars($row['resume_code']); ?>')">View</button>
-                                    </td>
+                                    <?php
+
+$resumeCode = isset($row['resume']) ? htmlspecialchars($row['resume']) : '';
+?>
+<td>
+    <?php if (!empty($resumeCode)): ?>
+        <a href="download_resume.php?code=<?= $resumeCode ?>" 
+           class="btn btn-success" 
+           target="_blank">Download Resume</a>
+    <?php else: ?>
+        <span class="text-muted">No Resume</span>
+    <?php endif; ?>
+</td>
+
+
+                                    <?php
+// Assign variables for easier readability
+$name = htmlspecialchars($row['name']);
+$email = htmlspecialchars($row['email']);
+$phone = htmlspecialchars($row['phone']);
+$education = htmlspecialchars($row['education']);
+$position = htmlspecialchars($row['position']);
+$coverLetter = htmlspecialchars($row['cover_letter']);
+$resumeCode = htmlspecialchars($row['resume']);
+?>
+
+<td class="actions">
+    <button 
+        class="btn view-btn btn-info" 
+        data-name="<?= $name ?>" 
+        data-email="<?= $email ?>" 
+        data-phone="<?= $phone ?>" 
+        data-education="<?= $education ?>" 
+        data-position="<?= $position ?>" 
+        data-cover-letter="<?= $coverLetter ?>" 
+        data-resume-code="<?= $resumeCode ?>"
+    >
+        View
+    </button>
+</td>
+
+
                                 </tr>
                             <?php endwhile; ?>
                         </tbody>
@@ -143,27 +173,30 @@ $result = $stmt->get_result(); // Get the result set
 
                 <!-- Modal for viewing application details -->
                 <div class="modal fade" id="applicantModal" tabindex="-1" aria-labelledby="applicantModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="applicantModalLabel">Applicant Details</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p><strong>Name:</strong> <span id="applicantName"></span></p>
-                                <p><strong>Email:</strong> <span id="applicantEmail"></span></p>
-                                <p><strong>Phone:</strong> <span id="applicantPhone"></span></p>
-                                <p><strong>Education:</strong> <span id="applicantEducation"></span></p>
-                                <p><strong>Position:</strong> <span id="applicantPosition"></span></p>
-                                <p><strong>Cover Letter:</strong> <span id="applicantCoverLetter"></span></p>
-                                <p><strong>Resume:</strong><a href="download_resume.php?code=<?php echo htmlspecialchars($row['resume_code']); ?>" class="btn btn-success" target="_blank">Download Resume</a></p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="applicantModalLabel">Applicant Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Name:</strong> <span id="applicantName"></span></p>
+                <p><strong>Email:</strong> <span id="applicantEmail"></span></p>
+                <p><strong>Phone:</strong> <span id="applicantPhone"></span></p>
+                <p><strong>Education:</strong> <span id="applicantEducation"></span></p>
+                <p><strong>Position:</strong> <span id="applicantPosition"></span></p>
+                <p><strong>Cover Letter:</strong> <span id="applicantCoverLetter"></span></p>
+                <p><strong>Resume:</strong> 
+                    <a href="#" class="btn btn-success" target="_blank">Download Resume</a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
             </div>
         </main>
@@ -176,20 +209,40 @@ $result = $stmt->get_result(); // Get the result set
 
 <script>
     // Function to open the modal and populate it with the applicant's details
-    function openModal(name, email, phone, education, position, coverLetter, resume) {
+    function openModal(name, email, phone, education, position, coverLetter, resumeCode) {
         document.getElementById('applicantName').textContent = name;
         document.getElementById('applicantEmail').textContent = email;
         document.getElementById('applicantPhone').textContent = phone;
         document.getElementById('applicantEducation').textContent = education;
         document.getElementById('applicantPosition').textContent = position;
-        document.getElementById('applicantCoverLetter').textContent = coverLetter;
-        document.getElementById('applicantResume').href = resume;
+        document.getElementById('applicantCoverLetter').innerHTML = coverLetter;
+        document.querySelector('#applicantModal a').href = `download_resume.php?code=${resumeCode}`;
 
         // Show the modal
         var myModal = new bootstrap.Modal(document.getElementById('applicantModal'));
         myModal.show();
     }
+
+    // Add event listeners to all "View" buttons
+    document.addEventListener("DOMContentLoaded", function () {
+        const viewButtons = document.querySelectorAll(".view-btn");
+
+        viewButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const name = this.getAttribute("data-name");
+                const email = this.getAttribute("data-email");
+                const phone = this.getAttribute("data-phone");
+                const education = this.getAttribute("data-education");
+                const position = this.getAttribute("data-position");
+                const coverLetter = this.getAttribute("data-cover-letter");
+                const resumeCode = this.getAttribute("data-resume-code");
+
+                openModal(name, email, phone, education, position, coverLetter, resumeCode);
+            });
+        });
+    });
 </script>
+
 
 </body>
 </html>

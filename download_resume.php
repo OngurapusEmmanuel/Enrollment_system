@@ -1,7 +1,7 @@
 <?php
 // download_resume.php
 
-include('/includes/config.php');
+// include('/includes/config.php');
 
 if (isset($_GET['code'])) {
     $resumeCode = $_GET['code'];
@@ -23,5 +23,5 @@ if (isset($_GET['code'])) {
     echo "No resume code provided.";
 }
 
-$conn->close();
+// $conn->close();
 ?>

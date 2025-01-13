@@ -48,17 +48,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $stmt->bind_param("ss", $title, $content);
 
                 if ($stmt->execute()) {
-                    echo "<script>
-                    alert('Notification posted successfully'));
-                    </script>";
-                    // echo json_encode([
-                    //     "success" => true,
-                    //     "message" => "Notification posted successfully!"
-                    // ]);
+                //    header('location:admin-dashboard.php');
+
+                    echo json_encode([
+                        "success" => true,
+                        "message" => "Notification posted successfully!"
+                    ]);
                 } else {
                     echo json_encode([
                         "success" => false,
                         "message" => "Error posting notification: " . $con->error
+                       
                     ]);
                 }
                 $stmt->close();

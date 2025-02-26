@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Client-Login</title>
+    <title>Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="css/login.css">
-    <link rel="icon" href="images/statue.jpg" type="image/x-icon">
+    <link rel="icon" href="images/bethel.png" type="image/x-icon">
 </head>
 
 <body>
@@ -19,7 +19,7 @@ include_once('includes/sessions.php');
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
-    include_once "config.php";
+    include_once ('includes/config.php');
 
     if ($con) {
         $stmt = $con->prepare("SELECT Firstname, `Password`, `Role`, `First_login` FROM users WHERE Email = ?");
@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->fetch();
 
         // if (!password_verify($password, $Password))
-        if (!$password===$Password)
+        if (!$password===$Password || !password_verify($password, $Password))
          {
             $_SESSION['error'] = "Invalid password!";
             header("Location: login.php");
@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <form action="" method="post">
            
             <div class="imgcontainer">
-                <img src="images/user.png" alt="Avatar" class="avatar">
+                <img src="images/bethel.png" alt="Avatar" class="avatar">
             </div>
 
             <div class="container">

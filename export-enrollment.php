@@ -9,7 +9,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 // Include the database connection configuration
-include('config.php');
+include('includes/config.php');
 
 // Clear any previous output
 ob_clean();
@@ -43,8 +43,8 @@ foreach ($headers as $cell => $header) {
 }
 
 // Query to fetch all records from the enrollment_data table (excluding 'id' or any other specific field)
-$sql = "SELECT name, parent_name, age, sex, education, category, disabilities, disability_certificate, support, bpl, parent_occupation, guardian_name, guardian_relation, health_insurance, other_facilities FROM enrollment_data";
-$stmt = $conn->prepare($sql);
+
+$stmt = $con->prepare("SELECT `name`, parent_name, age, sex, education, category, disabilities, disability_certificate, support, bpl, parent_occupation, guardian_name, guardian_relation, health_insurance, other_facilities FROM enrollment_data");
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -82,5 +82,5 @@ $writer->save('php://output');
 
 // Close the database connection
 $stmt->close();
-$conn->close();
+$con->close();
 ?>

@@ -1,109 +1,88 @@
 <?php
-// Include the TCPDF library
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+ob_start(); // Start output buffering
+
 require_once('TCPDF-main/tcpdf.php');
+include('includes/config.php');
 
-// Include the database connection configuration
-include('config.php');
-
-// Extend TCPDF to customize the header
 class CustomPDF extends TCPDF {
     public function Header() {
-        // Path to the logo
         $logo = 'images/user.png'; 
-        
-        // Add the logo
-        $this->Image($logo, 10, 10, 30); // Adjust the position and size (x, y, width)
-
-        // Set font for the header text
+        $this->Image($logo, 10, 10, 30);
         $this->SetFont('helvetica', 'B', 12);
-
-        // Add the organization details
         $this->Cell(0, 5, 'BETHEL MENTAL WELLBEING', 0, 1, 'C');
         $this->SetFont('helvetica', '', 10);
         $this->Cell(0, 5, 'P.O. Box 260-50135, Khwisero, Kakamega', 0, 1, 'C');
         $this->Cell(0, 5, 'Telephone: 0115280583', 0, 1, 'C');
         $this->Cell(0, 5, 'Email: info@bethelmentalwellbeing.org', 0, 1, 'C');
         $this->Cell(0, 5, 'Website: www.bethelmentalwellbeing.org', 0, 1, 'C');
-
-        // Add a line below the header
         $this->Ln(5);
         $this->Cell(0, 0, '', 'T', 1, 'C');
     }
 }
 
-// Create a new PDF document
+// Check database connection
+if (!$con) {
+    die("Database connection failed: " . mysqli_connect_error());
+}
+
 $pdf = new CustomPDF('P', 'mm', 'A4', true, 'UTF-8', false);
-
-// Set document information
 $pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Your Organization');
 $pdf->SetTitle('Enrolled Clients Report');
-$pdf->SetSubject('Client Enrollment Details');
-$pdf->SetKeywords('Enrollment, Clients, Report');
-
-// Set margins
 $pdf->SetMargins(15, 27, 15);
 $pdf->SetHeaderMargin(10);
 $pdf->SetFooterMargin(10);
-
-// Add a page
 $pdf->AddPage();
-
-// Set font for the content
 $pdf->SetFont('helvetica', '', 10);
-
-// Add a title
 $pdf->Cell(0, 10, 'List of Enrolled Clients', 0, 1, 'C');
 $pdf->Ln(5);
 
-// Table headers
 $html = '<table border="1" cellpadding="5">
             <thead>
                 <tr>
                     <th width="5%">ID</th>
-                    <th width="20%">first Name</th>
+                    <th width="20%">First Name</th>
                     <th width="20%">Last Name</th>
-                    <th width="5%">Email</th>
+                    <th width="20%">Email</th>
                     <th width="10%">Phone Number</th>
-                    <th width="20%">Role</th>
-                    <th width="20%">Status</th>
+                    <th width="15%">Role</th>
+                    <th width="10%">Status</th>
                 </tr>
             </thead>
             <tbody>';
 
-// Query to fetch all records from the enrollment_data table
-$sql = "SELECT Id, Firstname, Lastname, Email, `Phone Number`, Role, Status FROM users";
-$stmt = $conn->prepare($sql);
-$stmt->execute();
-$result = $stmt->get_result();
+// $sql = "SELECT Id, Firstname, Lastname, Email, `Phone Number`, `Role`, `Status` FROM users";
+$stmt = $con->prepare( "SELECT Id, Firstname, Lastname, Email, `Phone Number`, `Role`, `Status` FROM users");
 
-// Append data to the table
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-       
-        $html .= '<tr>
-                    <td>' . $row['Id'] . '</td>
-                    <td>' . $row['Firstname'] . '</td>
-                    <td>' . $row['Lastname'] . '</td>
-                    <td>' . $row['email'] . '</td>
-                    <td>' . $row['Phone Number'] . '</td>
-                    <td>' . $row['Role'] . '</td>
-                    <td>' . $row['Status'] . '</td>
-                  </tr>';
+if ($stmt) {
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $html .= '<tr>
+                        <td>' . htmlspecialchars($row['Id']) . '</td>
+                        <td>' . htmlspecialchars($row['Firstname']) . '</td>
+                        <td>' . htmlspecialchars($row['Lastname']) . '</td>
+                        <td>' . htmlspecialchars($row['Email']) . '</td>
+                        <td>' . htmlspecialchars($row['Phone Number']) . '</td>
+                        <td>' . htmlspecialchars($row['Role']) . '</td>
+                        <td>' . htmlspecialchars($row['Status']) . '</td>
+                      </tr>';
+        }
+    } else {
+        $html .= '<tr><td colspan="7">No data available</td></tr>';
     }
+    $stmt->close();
 } else {
-    $html .= '<tr><td colspan="7">No data available</td></tr>';
+    die('Query preparation failed: ' . $con->error);
 }
 
 $html .= '</tbody></table>';
-
-// Output the table to the PDF
 $pdf->writeHTML($html, true, false, true, false, '');
 
-// Close and output the PDF
-$pdf->Output('enrolled_clients.pdf', 'D');
+ob_end_clean(); // Ensure no output before PDF
+$pdf->Output('enrolled_clients.pdf', 'I');
 
-// Close the database connection
-$stmt->close();
-$conn->close();
+$con->close();
 ?>

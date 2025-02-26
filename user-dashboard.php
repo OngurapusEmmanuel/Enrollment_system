@@ -64,8 +64,8 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Management Dashboard</title>
-    <!-- Bootstrap CSS -->
+    <title>User Dashboard</title>
+    <link rel="icon" href="images/bethel.png" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -338,7 +338,7 @@ $result = $stmt->get_result();
              
                     
                     if($con){
-                        $stmt = $con->prepare("SELECT *FROM notifications");
+                        $stmt = $con->prepare("SELECT `id`,`title`,`content`FROM notifications");
                         
                         if ($stmt->execute()) {
                          // Bind the result to a variable

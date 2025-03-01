@@ -1,13 +1,13 @@
 <?php
-// require_once "includes/sessions.php";
-// if (isset($_SESSION["name"])) {
+require_once "includes/sessions.php";
+if (isset($_SESSION["name"])) {
 
-//     header("Location:index.php");
+    header("Location:index.php");
    
-//   }
-//   else {
-//       header("Location:login.php");
-//   }
+  }
+  else {
+      header("Location:login.php");
+  }
 ?>
 
 <!DOCTYPE html>
@@ -117,6 +117,16 @@
                     <div class="form-check form-check-inline">
                         <input type="checkbox" name="disabilities[3]" value="MD" class="form-check-input" id="md">
                         <label for="md" class="form-check-label">MD</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" name="disabilities[4]" value="Other" class="form-check-input" id="other">
+                        <label for="other" class="form-check-label">Other</label>
+                    </div>
+
+                    <div  class="col-md-6" >
+                        <label for="other1" class="form-check-label">Please state:</label>
+                        <input type="text" name="disabilities[4]" class="form-control" id="other1">
+                        
                     </div>
 
                     <div class="col-md-6">
@@ -234,8 +244,55 @@
             }
         }
     </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let otherCheckbox = document.getElementById("other");
+        let otherInput = document.getElementById("other1");
+
+        otherCheckbox.addEventListener("change", function () {
+            if (this.checked) {
+                otherInput.style.display = "block";
+                otherInput.required = true; // Make input required
+            } else {
+                otherInput.style.display = "none";
+                otherInput.required = false;
+                otherInput.value = ""; // Clear input when hidden
+                this.value = "Other"; // Reset checkbox value
+            }
+        });
+
+        otherInput.addEventListener("input", function () {
+            if (otherCheckbox.checked) {
+                otherCheckbox.value = this.value; // Set checkbox value to input value
+            }
+        });
+
+        // Hide input initially
+        otherInput.style.display = "none";
+    });
+</script>
 </body>
 </html>
+<script>
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     let otherCheckbox = document.getElementById("other");
+    //     let otherInput = document.getElementById("other1");
+
+    //     otherCheckbox.addEventListener("change", function () {
+    //         if (this.checked) {
+    //             otherInput.style.display = "block";
+    //         } else {
+    //             otherInput.style.display = "none";
+    //             otherInput.value = ""; // Clear input when hidden
+    //         }
+    //     });
+
+    //     // Hide input initially
+    //     otherInput.style.display = "none";
+    // });
+</script>
+
+
 
 
 

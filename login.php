@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     include_once ('includes/config.php');
 
     if ($con) {
-        $stmt = $con->prepare("SELECT Firstname, `Password`, `Role`, `First_login` FROM users WHERE Email = ?");
+        $stmt = $con->prepare("SELECT `Id`,Firstname, `Password`, `Role`, `First_login` FROM users WHERE Email = ?");
         $stmt->bind_param('s', $email);
         $stmt->execute();
         $stmt->store_result();
@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit();
         }
 
-        $stmt->bind_result($Firstname, $Password, $Role, $First_login);
+        $stmt->bind_result($Id,$Firstname, $Password, $Role, $First_login);
         $stmt->fetch();
 
         // if (!password_verify($password, $Password))
@@ -49,6 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             header("Location: admin-dashboard.php");
             exit();
         } elseif ($Role === "user") {
+            $_SESSION["id"]=$Id;
             $_SESSION["name"] = $Firstname;
             $_SESSION["role"] = $Role;
             $_SESSION["first_login"] = $First_login;

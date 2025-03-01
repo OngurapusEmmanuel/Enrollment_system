@@ -58,6 +58,27 @@ $sql = "SELECT *FROM notifications";
 $stmt = $con->prepare($sql);
 $stmt->execute();
 $result = $stmt->get_result();
+
+function getRecordCount($table) {
+    global $con;
+    $stmt = $con->prepare("SELECT COUNT(*) FROM $table");
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+    return $count;
+}
+
+function getEnrollerRecordCount($table,$id) {
+    global $con;
+    $stmt = $con->prepare("SELECT COUNT(*) FROM $table WHERE enroller_id=?");
+    $stmt->bind_param(i,$id);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+    return $count;
+}
 ?>
  <!DOCTYPE html>
 <html lang="en">
@@ -146,84 +167,18 @@ $result = $stmt->get_result();
                 <div class="row mb-4">
                     <div class="col-md-4">
                         <div class="card text-white bg-primary mb-3">
-                            <?php
-                            // Include database connection file
-                            require_once("includes/config.php");
-
-                            $requestCount1 = 0;
-                            $num=0;
-                            if ($con) {
-                                // Prepare an SQL statement to count rows
-                                $stmt = $con->prepare("SELECT COUNT(*) FROM clients");
-                                
-                                // Execute the statement
-                                if ($stmt->execute()) {
-                                    // Bind the result to a variable
-                                    $stmt->bind_result($requestCount1);
-                                    $stmt->fetch();
-                                }
-                                // if($stmt1->execute()){
-                                //     $stmt1->bind_result($num);
-                                //     $stmt1->fetch();
-                                // }
-                            
-                                // Close the statement and connection
-                                $stmt->close();
-                                // $stmt1->close();
-                            
-                            } else {
-                                echo "Database connection failed.";
-                            }
-                            ?>
                             <div class="card-body">
                                 <h5 class="card-title">Total Clients</h5>
-                                <p class="card-text display-4"><?php if ($requestCount1 > 0 ||$num > 0): ?>
-                            <?php
-                                 echo $requestCount1; 
-                                 ?>
-                        <?php endif; ?></p>
+                                <p class="card-text display-4"><?php echo getRecordCount('clients'); ?></p>
+                           
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card text-white bg-success mb-3">
                             <div class="card-body">
-                            <?php
-                            // Include database connection file
-                            require_once("includes/config.php");
-
-                            
-                            $requestCount11 = 0;
-                            $num=0;
-                            if ($con) {
-                                // Prepare an SQL statement to count rows
-                                $stmt = $con->prepare("SELECT COUNT(*) FROM clients");
-                                
-                                // Execute the statement
-                                if ($stmt->execute()) {
-                                    // Bind the result to a variable
-                                    $stmt->bind_result($requestCount11);
-                                    $stmt->fetch();
-                                }
-                                // if($stmt1->execute()){
-                                //     $stmt1->bind_result($num);
-                                //     $stmt1->fetch();
-                                // }
-                            
-                                // Close the statement and connection
-                                $stmt->close();
-                                // $stmt1->close();
-                            
-                            } else {
-                                echo "Database connection failed.";
-                            }
-                            ?>
                                 <h5 class="card-title">Clients Enrolled</h5>
-                                <p class="card-text display-4"><?php if ($requestCount1 > 0 ||$num > 0): ?>
-                            <?php
-                                 echo $requestCount11; 
-                                 ?>
-                        <?php endif; ?></p>
+                                <p class="card-text display-4"><?php echo getEnrollerRecordCount('clients',$_SESSION['id']); ?></p>
                             </div>
                         </div>
                     </div>
@@ -231,7 +186,7 @@ $result = $stmt->get_result();
                         <div class="card text-white bg-warning mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">Pending Approvals</h5>
-                                <p class="card-text display-4">15</p>
+                                <p class="card-text display-4"><?php echo getRecordCount('clients'); ?></p>
                             </div>
                         </div>
                     </div>

@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->fetch();
 
         // if (!password_verify($password, $Password))
-        if (!$password===$Password || !password_verify($password, $Password))
+        if (!password_verify($password, $Password))
          {
             $_SESSION['error'] = "Invalid password!";
             header("Location: login.php");
